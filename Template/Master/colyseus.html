@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>DEPRECATED: ###TITLE###</title>
+  <!-- Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src * ws: wss: gap: data: file: http: https: blob:; style-src * 'unsafe-inline' ws: wss: gap: data: file: http: https: blob:; script-src * 'unsafe-inline'###EVAL### ws: wss: gap: data: file: http: https: blob:" />
+  <!-- Caches -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <!-- Default -->
+  <meta name="edge" content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no, viewport-fit=cover">
+  <meta name="browsermode" content="application">
+  <meta name="description" content="###TITLE###">
+  <meta name="theme-color" content="###SPLASH###">
+  <!-- Apple -->
+  <meta name="apple-mobile-web-app-title" content="###SHORT###">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- Android  -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- Windows  -->
+  <meta name="application-name" content="###TITLE###">
+  <meta name="msapplication-navbutton-color" content="###SPLASH###">
+  <meta name="msapplication-tooltip" content="###TITLE###">
+  <meta name="msapplication-starturl" content="###START###">
+  <meta name="msapplication-TileColor" content="###SPLASH###">
+  <meta name="msapplication-tap-highlight" content="no">
+  <!-- Favorite -->
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <!-- Bootstrap Core CSS -->
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <!-- Awesome fonts for this template -->
+  <link href="css/awesome.css" rel="stylesheet" type="text/css">
+  <!-- Toaster - https://github.com/dolce/iziToast -->
+  <link href="css/toaster.css" rel="stylesheet" type="text/css">
+  <style nonce="###HASH###">
+    html, body {
+      position: absolute;
+      min-height: 100%;
+      width: 100%;
+      height: 100%;
+      padding: 0px;
+      margin: 0px;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;    
+      font-family: "Segoe UI", "Segoe WP", "Verdana", "Arial";
+      background-color: ###SPLASH###;
+    }
+    iframe {
+      border:none;
+    }    
+    #game {
+      position: absolute;
+      min-height: 100%;
+      width: 100%;
+      height: 100%;
+      padding: 0px;
+      margin: 0px;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      opacity: 0;
+      display: none;
+      outline: none;
+      overflow: hidden;
+      touch-action: none;
+      -ms-touch-action: none;
+      background-color: ###SPLASH###;
+    }
+    #load {
+      position: absolute;
+      min-height: 100%;
+      width: 100%;
+      height: 100%;
+      padding: 5px;
+      margin: 0px;
+      top: 0;
+      left: 0;
+      z-index: 10001;
+      opacity: 0;
+      display: block;
+      outline: none;
+      overflow: hidden;
+      touch-action: none;
+      -ms-touch-action: none;
+      pointer-events: none;
+      background-color: #000000;
+      color: #FFFFFF;
+    }
+    #build {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      z-index: 10;
+      font-size: small;
+      color: #FFFFFF;
+    }
+    #load.visible {
+      opacity: 1;
+    }
+    .my-highlight-row {
+      background-color:yellow;
+    }    
+    .my-custom-scrollbar {
+      position: relative;
+      height: 348px;
+      overflow: auto;
+    }
+    .table-wrapper-scroll-y {
+      display: block;
+    }
+    .card {
+      padding: 15px;
+      height: auto;
+      display: flex;
+    }
+    .card-columns{
+      display: grid;
+      overflow: hidden;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 1fr;
+      grid-column-gap: 20px;
+      grid-row-gap: 10px;
+    }    
+    /* Full Screen Modal
+    .modal {
+      padding: 0 !important;
+    }
+    .modal .modal-dialog {
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      margin: 0;
+    }
+    .modal .modal-content {
+      height: 100%;
+      border: 0;
+      border-radius: 0;
+    }
+    .modal .modal-body {
+      overflow-y: auto;
+    }
+    */
+    .hidden { display: none; }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+  </style>
+  <!-- ******************************** -->
+  <!-- CUSTOM: Styles for this template -->
+  <!-- ******************************** -->
+  <style nonce="###HASH###">html{height:100%}body{height:100%;min-height:35rem;position:relative;font-weight:220}h1,h2,h3,h4,h5,h6{font-weight:540}video{position:fixed;top:50%;left:50%;min-width:100%;min-height:100%;width:auto;height:auto;transform:translateX(-50%) translateY(-50%);z-index:0}@media (pointer:coarse) and (hover:none){body{background:###SPLASH### no-repeat center center scroll;background-position:cover}body video{display:none}}.overlay{position:absolute;top:0;left:0;height:100%;width:100%;background-color:###SPIN###;opacity:0.33;z-index:1}.masthead{position:relative;overflow:hidden;padding-bottom:3rem;z-index:2}.masthead .masthead-bg{position:absolute;top:0;bottom:0;right:0;left:0;width:100%;min-height:35rem;height:100%;background-color:###SPLASH###;transform:skewY(4deg);transform-origin:bottom right}.masthead .masthead-content h1{font-size:2.5rem}.masthead .masthead-content p{font-size:1.2rem}.masthead .masthead-content p strong{font-weight:700}.masthead .masthead-content .input-group-newsletter input{height:auto;font-size:1rem;padding:1rem}.masthead .masthead-content .input-group-newsletter button{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:1rem}@media (min-width:768px){.masthead{height:100%;min-height:0;width:43.0rem;padding-bottom:0}.masthead .masthead-bg{min-height:0;transform:skewX(-8deg);transform-origin:top right}.masthead .masthead-content{padding-left:3rem;padding-right:10rem}.masthead .masthead-content h1{font-size:3.5rem}.masthead .masthead-content p{font-size:1.3rem}}.social-icons{position:absolute;margin-bottom:2rem;width:100%;z-index:2}.social-icons ul{margin-top:2rem;width:100%;text-align:center}.social-icons ul>li{margin-left:1rem;margin-right:1rem;display:inline-block}.social-icons ul>li>a{display:block;color:#fff;background-color:###SPLASH###;border-radius:100%;font-size:2rem;line-height:4rem;height:4rem;width:4rem}@media (min-width:768px){.social-icons{margin:0;position:absolute;right:2.5rem;bottom:2rem;width:auto}.social-icons ul{margin-top:0;width:auto}.social-icons ul>li{display:block;margin-left:0;margin-right:0;margin-bottom:2rem}.social-icons ul>li:last-child{margin-bottom:0}.social-icons ul>li>a{transition:all .2s ease-in-out;font-size:2rem;line-height:4rem;height:4rem;width:4rem}.social-icons ul>li>a:hover{background-color:###SPLASH###}}.btn-secondary{background-color:###SPIN###;border-color:###SPIN###}.btn-secondary:active,.btn-secondary:focus,.btn-secondary:hover{background-color:###SPIN###!important;border-color:###SPIN###!important}.input{font-weight:300!important}</style>
+  <style nonce="###HASH###">body { background-image: url('images/splash.jpg'); }</style>
+</head>
+<body>
+  <!-- ******************************** -->
+  <!-- CUSTOM: Markup for this template -->
+  <!-- ******************************** -->
+  <div class="overlay"></div>
+  ###VIDEO###
+  <div class="masthead">
+    <div class="masthead-bg"></div>
+    <div class="container h-100">
+      <div class="row h-100">
+        <div class="col-12 my-auto">
+          <div class="masthead-content text-white py-5 py-md-0">
+            <h1 class="mb-3"><span style="color:###SPIN###;">###TITLE###</span></h1>
+            <p class="mb-4">###SUMMARY###</p>
+            <div class="form-group">
+              <table style="width: 100%;">
+                <tr>
+                  <td style="width: 125px; padding-bottom: 0px;" ><label for="playerName">Player Name</label></td>
+                  <td style="text-align: right; padding-bottom: 4px;">
+                    <span style="display: ###PLAYERBUTTON###;">(</span>
+                    <button id="playerButton" type="button" class="btn btn-link" style="display: ###PLAYERBUTTON###; padding-top: 0px; padding-left: 0px; padding-right: 0px; padding-bottom: 3px;" onclick="playerButtonClick();">Avatar Library</button>
+                    <span style="display: ###AVATARDIVIDE###;">&nbsp;|&nbsp;</span>
+                    <button id="avatarButton" type="button" class="btn btn-link" style="display: ###AVATARBUTTON###; padding-top: 0px; padding-left: 0px; padding-right: 0px; padding-bottom: 3px;" onclick="avatarButtonClick();">Ready Player Me</button>
+                    <span style="display: ###PLAYERBUTTON###;">)</span>
+                  </td>
+                </tr>
+              </table>
+              <input type="text" class="form-control" id="playerName" name="playerName" value="Default Player">
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="regionList">
+###SERVERLIST###
+              </select>
+            </div>
+            <div class="input-group input-group-newsletter">
+              <div class="input-group-append">
+                <button id="soloButton" class="btn btn-secondary" type="button" style="min-width: 143px;" onclick="soloButtonClick();">Play Solo</button>
+                &nbsp;&nbsp;  
+                <button id="playButton" class="btn btn-secondary" type="button" style="min-width: 143px;" onclick="hostButtonClick();">Host Game</button>
+                &nbsp;&nbsp;  
+                <button id="joinButton" class="btn btn-success" type="button" style="min-width: 144px;" onclick="joinButtonClick();">Join Game</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="soloModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Select Demo Scene</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="form-group">
+            <select class="form-control" id="sel0">
+###SCENELIST###    
+            </select>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="soloCloseButton">Play</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="hostModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Enter Room Description</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="form-group">
+            <input type="text" class="form-control" id="roomDesc" name="roomDesc" value="">
+          </div>
+          <div class="form-group">
+            <label for="sel1">Select Demo Scene</label>
+            <select class="form-control" id="sel1">
+###SCENELIST###    
+            </select>
+          </div>
+          <div style="font-size: small; color: red; overflow: hidden;">
+            <center>
+            <span id="hostErrorLabel">&nbsp</span>
+            </center>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="hostCloseButton">Host</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="joinModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Select Game Session</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="table-wrapper-scroll-y my-custom-scrollbar">          
+            <table id="infoTable" class="table table-sm table-fixed mb-0">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col" style="width: 25px">#</th>
+                  <th scope="col" style="width: 225px">Description</th>
+                  <th scope="col" style="width: 125px">Scene</th>
+                  <th scope="col" style="width: 75px">Users</th>
+                  <th class="hidden">aux</th>
+                </tr>
+              </thead>
+              <tbody id="roomBody"></tbody>
+            </table>
+            <div style="font-size: medium; overflow: hidden; padding-top: 8px; padding-left: 4px;">
+              <span id="joinInfoLabel">&nbsp</span>
+            </div>
+          </div>      
+        </div>
+        <div style="font-size: small; color: red; overflow: hidden;">
+          <center>
+          <span id="joinErrorLabel">&nbsp</span>
+          </center>
+        </div>
+        <br/>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link mr-auto" id="joinRefreshButton">Refresh Game Sessions</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="joinCloseButton">Join</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="avatarModal">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Ready Player Me</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <iframe id="avatarFrame" width="100%" height="540px" scrolling="auto" frameBorder="0" allow="camera *; microphone *"></iframe>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-between">
+          <div>
+            <button type="button" class="btn btn-danger" id="browseFacesButton">Generated Photos</button>
+            <button type="button" class="btn btn-success" id="enterHubButton">Enter Hub</button>
+          </div>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="playerModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Avatar Library</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="container-fluid" style="width: 100%; height: 478px; overflow-y: auto; overflow-x: hidden;">
+            <div class="card-columns" id="cardBody">
+            </div>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="social-icons">
+    <ul class="list-unstyled text-center mb-0">
+      <li class="list-unstyled-item">
+        <a href="#">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+      <li class="list-unstyled-item">
+        <a href="#">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+      </li>
+      <li class="list-unstyled-item">
+        <a href="#">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div id="build">Version: ###BUILD###</div>
+  <!-- ******************************** -->
+  <!-- SCRIPT: Markup for this template -->
+  <!-- ******************************** -->
+  <script type="text/javascript" src="###SCRIPT###/jquery.js"></script>
+  <script type="text/javascript" src="###SCRIPT###/bootstrap.js"></script>
+  <script type="text/javascript" src="###SCRIPT###/fastclick.js"></script>
+  <script type="text/javascript" src="###SCRIPT###/toaster.js"></script>
+  <script type="text/javascript" src="###SCRIPT###/colyseus.js"></script>
+
+  <!-- JQuery -->
+  <script type="text/javascript" nonce="###HASH###">
+    jQuery;
+  </script>
+
+  <!-- Fetch Manifest -->
+  <script type="text/javascript" nonce="###HASH###">
+  window.fetchProjectManifestAsync = async (url) => {
+    try {
+        let res = await fetch(url);
+        return await res.json();
+    } catch (error) {
+        console.log(error);
+    }
+  };
+  window.loadProjectManifest = async (url) => {
+    window.project = await window.fetchProjectManifestAsync(url);
+    if (window.project != null && window.project.options != null && window.project.options.avatarLibrary != null && window.project.options.avatarLibrary !== "") {
+      if (window.project.options.avatarLibrary.toLowerCase() === "project.json") {
+        if (window.project.avatars != null) window.avatars = window.project.avatars;
+      } else {
+        var remote = await window.fetchProjectManifestAsync(window.project.options.avatarLibrary);
+        if (remote != null && remote.avatars) window.avatars = remote.avatars;
+      }
+    }
+  };
+  window.loadProjectManifest("project.json").then(()=>{});
+  </script>
+
+  <!-- Default Script -->
+  <script type="text/javascript" nonce="###HASH###">
+  window.projectName = "###TITLE###";
+  window.versionStamp = "###VERSION###";
+  window.avatarHub = ("###AVATAREDITOR###" + "/hub");
+  window.avatarEditor = ("###AVATAREDITOR###" + "/avatar?frameApi");
+  window.serverEndpoint = "###ENDPOINT###";
+  window.generatedPhotos = "https://generated.photos/faces";
+  window.playerGender = (window.localStorage != null) ? window.localStorage.getItem("playerGender") : null;
+  window.playerHandness = (window.localStorage != null) ? window.localStorage.getItem("playerHandness") : null;
+  window.selectedAvatar = (window.localStorage != null) ? window.localStorage.getItem("selectedAvatar") : null;
+  window.colyseusClient = new Colyseus.Client();
+  window.selectedRoomInfo = "";
+  var regionList = document.getElementById('regionList');
+  var playerName = document.getElementById('playerName');
+  var playButton = document.getElementById('playButton');
+  var joinButton = document.getElementById('joinButton');
+  var soloButton = document.getElementById('soloButton');
+  var avatarFrame = document.getElementById('avatarFrame');
+  var savedName = (window.localStorage != null) ? window.localStorage.getItem("playerName") : null;
+  if (savedName != null && savedName !== "") {
+    playerName.value = savedName;
+  }
+  var savedRegion = (window.localStorage != null) ? window.localStorage.getItem("playerRegion") : null;
+  if (savedRegion != null && savedRegion !== "") {
+    regionList.value = savedRegion;
+  }
+  var setupRoomClickHandler = () => {
+    $("#infoTable tbody tr").click(() => {
+      var row = $(this)[0];
+      if (row != null && row.cells != null && row.cells.length >= 5) {
+        window.selectedRoomInfo = row.cells[4].innerHTML;
+      }
+      $("#infoTable tr").removeClass("my-highlight-row");
+      $(this).addClass("my-highlight-row");
+    });
+  };
+
+  ///////////////////////////////////////////////////////////
+  // Window Url Parameters
+  ///////////////////////////////////////////////////////////
+  window.getUrlParameter = (name) => {
+    if (window.location == null || window.location.search == null || window.location.search === "") return null;
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(window.location.search);
+    return (results !== null) ? decodeURIComponent(results[1].replace(/\+/g, ' ')) : null;
+  };
+  ///////////////////////////////////////////////////////////
+  // Window Mobile Devcies
+  ///////////////////////////////////////////////////////////
+  window.isMobileDevice = () => {
+    let result = false;
+    if (navigator != null && navigator.userAgent != null) {
+      const n = navigator.userAgent;
+      if (n.match(/Android/i) || n.match(/webOS/i) || n.match(/iPhone|iPad|iPod/i) || n.match(/BlackBerry/i) || n.match(/Opera Mini/i) || n.match(/Windows Phone/i)) {
+          result = true;
+      }
+    }
+    return result;
+  };
+  ///////////////////////////////////////////////////////////
+  // Babylon Service Worker Hooks
+  ///////////////////////////////////////////////////////////
+  window.useServiceWorker = false;###WORK###
+  if (window.useServiceWorker === true) {
+    if (soloButton) soloButton.disabled = true;
+    if (playButton) playButton.disabled = true;
+    if (joinButton) joinButton.disabled = true;
+  }
+  window.onServiceWorker = () => {
+    if (soloButton) soloButton.disabled = false;
+    if (playButton) playButton.disabled = false;
+    if (joinButton) joinButton.disabled = false;
+  };
+  window.updateAvailable = () => {
+    var msg = "A new version is available";
+    console.warn(msg);
+    iziToast.show({
+      title: "UPDATE:",
+      message: msg,
+      timeout: 30000,
+      buttons: [
+        ['<button>Reload</button>', (instance, toast) => {
+          window.location.reload(true);
+        }, true]      
+      ]
+    });    
+  };
+  window.showToastMessage = (message, timeout) => {
+      console.log(message);
+      iziToast.success({
+          message: message,
+          timeout: timeout || 10000
+      });    
+  };
+  ///////////////////////////////////////////////////////////
+  // Babylon Scene Loader Window Hooks
+  ///////////////////////////////////////////////////////////
+  window.loadScene = (sceneFile, queryString) => {
+    let url = "###FRAME###?scene=" + sceneFile;
+    if (queryString != null && queryString !== "") url += queryString;
+    window.location.replace(url);
+  };
+  window.addEventListener("message", (event) => {
+    if (event.data != null && event.data.source != null && event.data.source === "babylon") {
+      var JSONdata = event.data;
+      try {
+        if (JSONdata != null && JSONdata.command != null) {
+          switch (JSONdata.command) {
+            case "loadscene":
+              window.loadScene(JSONdata.param1, JSONdata.param2);
+              break;
+            case "loadscenecomplete":
+              // Note: Do Nothing - Uses Default Frame Content Window Loader
+              break;
+          }
+        }
+      } catch (e2) {
+        console.error(e2);
+      }
+    } else {
+      const json = parseAvatarEvent(event);
+      if (json?.source === 'readyplayerme') {
+        avatarPlayerSelected(json);
+      }
+    }
+  }, false);
+  ///////////////////////////////////////////////////////////
+  </script>
+  <!-- CUSTOM: Script for this template -->
+  <script type="text/javascript" nonce="###HASH###">
+    var playerButtonClick = () => {
+      if (window.avatars != null) {
+        let cardData = "";
+        window.avatars.forEach((avatar) => {
+          cardData += `<div class="card" style="width: 350px;">
+ <img class="card-img-top" src="${avatar.thumbnail}" alt="${avatar.label}">
+ <div class="card-body">
+  <center>
+   <h5 class="card-title">${avatar.label}</h5>
+   <a href="#" class="btn btn-primary" onclick="playerAvatarButtonClick('${avatar.endpoint}', '${avatar.handedness}', '${avatar.gender}');">Select Player</a>
+  </center>
+ </div>
+</div>
+`;
+        });
+        document.getElementById("cardBody").innerHTML = cardData;
+      }
+      $("#playerModal").modal("show");
+    }
+    var playerAvatarButtonClick = (url, hand, gender) => {
+      window.playerGender = gender
+      window.playerHandness = hand;
+      window.selectedAvatar = url;
+      if (window.localStorage != null) window.localStorage.setItem("selectedAvatar", window.selectedAvatar);
+      if (window.localStorage != null) window.localStorage.setItem("playerHandness", window.playerHandness);
+      if (window.localStorage != null) window.localStorage.setItem("playerGender", window.playerGender);
+      console.log(`LIST: Avatar URL: ${window.selectedAvatar}`);
+      $("#playerModal").modal('hide');
+      window.showToastMessage("Player avatar selected.");
+    }
+    var avatarButtonClick = () => {
+      if (window.avatarEditor != null && window.avatarEditor !== "") {
+        avatarFrame.src = window.avatarEditor;
+        $("#avatarModal").modal("show");
+      }
+    }
+    $("#avatarModal").on('hide.bs.modal',  () => {
+      avatarFrame.src = "about:blank";
+    });    
+    var avatarPlayerSelected = (json) => {
+      if (json.eventName === 'v1.frame.ready') {
+        avatarFrame.contentWindow.postMessage(
+          JSON.stringify({
+            target: 'readyplayerme',
+            type: 'subscribe',
+            eventName: 'v1.**'
+          }),
+          '*'
+        );
+        console.warn("Subscribed to avatar frame api messages");
+      }      
+      // Get avatar GLB URL
+      if (json.eventName === 'v1.avatar.exported') {
+        window.playerGender = "Male"; // json.data.gender - ???
+        window.playerHandness = "Right";
+        window.selectedAvatar = json.data.url;
+        if (window.localStorage != null) window.localStorage.setItem("selectedAvatar", selectedAvatar);
+        if (window.localStorage != null) window.localStorage.setItem("playerHandness", playerHandness);
+        if (window.localStorage != null) window.localStorage.setItem("playerGender", playerGender);
+        console.log(`RPM: Avatar URL: ${window.selectedAvatar}`);
+        $("#avatarModal").modal('hide');
+        window.showToastMessage("Player avatar selected.");
+      }
+      // Get user id
+      if (json.eventName === 'v1.user.set') {
+        console.log(`User with id ${json.data.id} set: ${JSON.stringify(json)}`);
+      }
+    };
+    $("#browseFacesButton").click(() => {
+      window.open(window.generatedPhotos, "Generated Photos");
+    });
+    $("#enterHubButton").click(() => {
+      window.open(window.avatarHub, "Ready Player Me");
+    });
+    var parseAvatarEvent = (event) => {
+      try {
+        return JSON.parse(event.data);
+      } catch (error) {
+        return null;
+      }
+    };
+    // ..
+    // Solo: Game Session Handlers
+    // ..
+    var soloButtonClick = () => {
+      document.getElementById("hostErrorLabel").innerHTML = "&nbsp";
+      $("#soloModal").modal("show");
+    };
+    $("#soloCloseButton").click(() => {
+      soloGameSession();
+      $("#soloModal").modal('hide');
+    });
+    var soloGameSession = () => {
+      var queryString = "";
+      var selectedPlayer = document.getElementById("playerName").value;
+      if (selectedPlayer != null && selectedPlayer !== "") {
+        queryString = ("?player=" + encodeURI(selectedPlayer));
+        if (window.localStorage != null) window.localStorage.setItem("playerName", selectedPlayer);
+      } else {
+        queryString += ("?player=" + encodeURI("Default Player"));
+      }
+      var selectedRegion = document.getElementById("regionList").value;
+      if (selectedRegion != null && selectedRegion !== "") {
+        if (window.localStorage != null) window.localStorage.setItem("playerRegion", selectedRegion);
+        queryString += ("&endpoint=" + encodeURI(selectedRegion));
+      }
+      queryString += "&solo=true";
+      var selectedAvatar = window.selectedAvatar;
+      if (selectedAvatar != null && selectedAvatar !== "") {
+        if (window.localStorage != null) window.localStorage.setItem("selectedAvatar", selectedAvatar);
+        queryString += ("&avatar=" + encodeURI(selectedAvatar));
+      }
+      var playerGender = window.playerGender;
+      if (playerGender != null && playerGender !== "") {
+        playerGender = playerGender.toLowerCase();
+        if (window.localStorage != null) window.localStorage.setItem("playerGender", playerGender);
+        queryString += ("&gender=" + encodeURI(playerGender));
+      }
+      var playerHandness = window.playerHandness;
+      if (playerHandness != null && playerHandness !== "") {
+        playerHandness = playerHandness.toLowerCase();
+        if (window.localStorage != null) window.localStorage.setItem("playerHandness", playerHandness);
+        queryString += ("&hand=" + encodeURI(playerHandness));
+      }
+      var selectedScene = document.getElementById("sel0").value;
+      if (selectedScene != null && selectedScene !== "") {
+        window.loadScene(selectedScene, queryString);
+      }
+    };
+    // ..
+    // Host: Game Session Handlers
+    // ..
+    var hostButtonClick = () => {
+      document.getElementById("hostErrorLabel").innerHTML = "&nbsp";
+      var roomDescCheck = document.getElementById("roomDesc").value;
+      if (roomDescCheck == null || roomDescCheck === "") {
+        document.getElementById("roomDesc").value = "";
+      }
+      $("#hostModal").modal("show");
+    };
+    $("#hostCloseButton").click(() => {
+      document.getElementById("hostErrorLabel").innerHTML = "&nbsp";
+      var roomDescValue = document.getElementById("roomDesc").value;
+      if (roomDescValue != null && roomDescValue !== "") {
+        hostGameSession(roomDescValue);
+        $("#hostModal").modal('hide');
+      } else {
+        document.getElementById("hostErrorLabel").innerHTML = "You must enter a room description";
+      }
+    });
+    var hostGameSession = (desc) => {
+      var queryString = "";
+      var selectedPlayer = document.getElementById("playerName").value;
+      if (selectedPlayer != null && selectedPlayer !== "") {
+        queryString = ("?player=" + encodeURI(selectedPlayer));
+        if (window.localStorage != null) window.localStorage.setItem("playerName", selectedPlayer);
+      } else {
+        queryString += ("?player=" + encodeURI("Default Player"));
+      }
+      var selectedRegion = document.getElementById("regionList").value;
+      if (selectedRegion != null && selectedRegion !== "") {
+        if (window.localStorage != null) window.localStorage.setItem("playerRegion", selectedRegion);
+        queryString += ("&endpoint=" + encodeURI(selectedRegion));
+      }
+      var selectedDesc = desc;
+      if (selectedDesc != null && selectedDesc !== "") {
+        queryString += ("&host=" + encodeURI(selectedDesc));
+      }
+      var selectedAvatar = window.selectedAvatar;
+      if (selectedAvatar != null && selectedAvatar !== "") {
+        if (window.localStorage != null) window.localStorage.setItem("selectedAvatar", selectedAvatar);
+        queryString += ("&avatar=" + encodeURI(selectedAvatar));
+      }
+      var playerGender = window.playerGender;
+      if (playerGender != null && playerGender !== "") {
+        playerGender = playerGender.toLowerCase();
+        if (window.localStorage != null) window.localStorage.setItem("playerGender", playerGender);
+        queryString += ("&gender=" + encodeURI(playerGender));
+      }
+      var playerHandness = window.playerHandness;
+      if (playerHandness != null && playerHandness !== "") {
+        playerHandness = playerHandness.toLowerCase();
+        if (window.localStorage != null) window.localStorage.setItem("playerHandness", playerHandness);
+        queryString += ("&hand=" + encodeURI(playerHandness));
+      }
+      var selectedScene = document.getElementById("sel1").value;
+      if (selectedScene != null && selectedScene !== "") {
+        window.loadScene(selectedScene, queryString);
+      }
+    };
+    // ..
+    // Join: Game Session Handlers
+    // ..
+    var getAvailableRooms = () => {
+      var selectedRegion = document.getElementById("regionList").value;
+      if (selectedRegion == null || selectedRegion === "" || selectedRegion === "*") {
+        selectedRegion = window.serverEndpoint;
+      }
+      if (window.colyseusClient.settings != null) {
+        const selectedRegionUrl = new URL(selectedRegion);
+        window.colyseusClient.settings.secure = selectedRegionUrl.protocol.startsWith("https");
+        window.colyseusClient.settings.hostname = selectedRegionUrl.hostname;
+        window.colyseusClient.settings.port = selectedRegionUrl.port;
+      }
+      window.colyseusClient.getAvailableRooms().then((rooms) => {
+        var listData = "";
+        if (rooms != null) {
+          let index = 0;
+          rooms.forEach((room) => {
+            if (room.roomId != null && room.roomId !== "") {
+              index++;
+              var rid = room.roomId;
+              var name = room.name;
+              var desc = (room.metadata != null && room.metadata.desc != null && room.metadata.desc !== "") ? room.metadata.desc : "Unknown Game Session";
+              var scene = (room.metadata != null && room.metadata.map != null && room.metadata.map !== "") ? room.metadata.map : "*";
+              var project = (room.metadata != null && room.metadata.project != null && room.metadata.project !== "") ? room.metadata.project : "*";
+              var usingudp = (room.metadata != null && room.metadata.udp != null && room.metadata.udp === true);
+              var clients = room.clients;
+              var maximum = room.maxClients;
+              var filename = scene.replace(".gltf", "").replace(".GLTF", "").replace(".glb", "").replace(".GLB", "");
+              var listValue = (rid + "|" + scene + "|" + name + "|" + usingudp.toString().toLowerCase());
+              // ..
+              // Validate Project Name
+              // ..
+              if (project.toLowerCase() === window.projectName.toLowerCase()) {
+                listData += "<tr>\r\n";
+                listData += "<th scope=\"row\">" + index.toFixed(0) + "</th>\r\n";
+                listData += "<td>" + desc + "</td>\r\n";
+                listData += "<td>" + filename + "</td>\r\n";
+                listData += "<td>" + (clients + " of " + maximum) + "</td>\r\n";
+                listData += "<td class=\"hidden\">" + listValue  + "</td>\r\n";
+                listData += "</tr>\r\n";
+              }
+            }
+          });
+        }
+        document.getElementById("roomBody").innerHTML = listData;
+        if (listData === "") {
+          document.getElementById("joinInfoLabel").innerHTML = "No game sessions found";
+          document.getElementById("joinInfoLabel").style.display = "block";
+        } else {
+          document.getElementById("joinInfoLabel").innerHTML = "";
+          document.getElementById("joinInfoLabel").style.display = "none";
+        }
+        document.getElementById("joinRefreshButton").style.display = "block";
+        setupRoomClickHandler();
+      }).catch((e) => {
+        document.getElementById("roomBody").innerHTML = "";
+        document.getElementById("joinInfoLabel").innerHTML = "Error loading game sessions";
+        document.getElementById("joinInfoLabel").style.display = "block";
+        document.getElementById("joinErrorLabel").innerHTML = "Failed to load available game sessions";
+        document.getElementById("joinRefreshButton").style.display = "block";
+        window.selectedRoomInfo = "";
+        console.error(e);
+      });
+    };
+    var joinButtonClick = () => {
+      document.getElementById("joinRefreshButton").style.display = "none";
+      document.getElementById("joinErrorLabel").innerHTML = "&nbsp";
+      document.getElementById("roomBody").innerHTML = "";
+      document.getElementById("joinInfoLabel").innerHTML = "Please wait...";
+      document.getElementById("joinInfoLabel").style.display = "block";
+      window.selectedRoomInfo = "";
+      $("#joinModal").modal("show");
+      window.setTimeout(getAvailableRooms, 500);
+    }
+    $("#joinRefreshButton").click(() => {
+      document.getElementById("joinRefreshButton").style.display = "none";
+      document.getElementById("joinErrorLabel").innerHTML = "&nbsp";
+      document.getElementById("roomBody").innerHTML = "";
+      document.getElementById("joinInfoLabel").innerHTML = "Please wait...";
+      document.getElementById("joinInfoLabel").style.display = "block";
+      window.selectedRoomInfo = "";
+      window.setTimeout(getAvailableRooms, 500);
+    });
+    $("#joinCloseButton").click(() => {
+      document.getElementById("joinErrorLabel").innerHTML = "&nbsp";
+      var roomListValue = window.selectedRoomInfo;
+      if (roomListValue != null && roomListValue !== "") {
+        if (roomListValue.indexOf("|") >= 0) {
+          var roomValueParts = roomListValue.split("|");
+          var roomValuePartsId = roomValueParts[0];
+          var roomValuePartsMap = roomValueParts[1];
+          var roomValuePartsName = roomValueParts[2];
+          var roomValuePartsUdp = roomValueParts[3];
+          if (roomValuePartsId !== "*" && roomValuePartsMap !== "*") {
+            joinGameSession(roomValuePartsId, roomValuePartsMap, roomValuePartsName, roomValuePartsUdp);
+            $("#joinModal").modal('hide');
+          } else {
+            document.getElementById("joinErrorLabel").innerHTML = "Invalid game session key format";
+          }
+        } else {
+          document.getElementById("joinErrorLabel").innerHTML = "Invalid game session key marker";
+        }
+      } else {
+        document.getElementById("joinErrorLabel").innerHTML = "You must select a game session to join";
+      }
+    });
+    var joinGameSession = (id, map, name, udp) => {
+      var queryString = "";
+      var selectedPlayer = document.getElementById("playerName").value;
+      if (selectedPlayer != null && selectedPlayer !== "") {
+        queryString = ("?player=" + encodeURI(selectedPlayer));
+        if (window.localStorage != null) window.localStorage.setItem("playerName", selectedPlayer);
+      } else {
+        queryString += ("?player=" + encodeURI("Default Player"));
+      }
+      var selectedRegion = document.getElementById("regionList").value;
+      if (selectedRegion != null && selectedRegion !== "") {
+        if (window.localStorage != null) window.localStorage.setItem("playerRegion", selectedRegion);
+        queryString += ("&endpoint=" + encodeURI(selectedRegion));
+      }
+      var selectedRoom = id;
+      if (selectedRoom != null && selectedRoom !== "") {
+        queryString += ("&join=" + encodeURI(selectedRoom));
+      }
+      var selectedAvatar = window.selectedAvatar;
+      if (selectedAvatar != null && selectedAvatar !== "") {
+        if (window.localStorage != null) window.localStorage.setItem("selectedAvatar", selectedAvatar);
+        queryString += ("&avatar=" + encodeURI(selectedAvatar));
+      }
+      var playerGender = window.playerGender;
+      if (playerGender != null && playerGender !== "") {
+        playerGender = playerGender.toLowerCase();
+        if (window.localStorage != null) window.localStorage.setItem("playerGender", playerGender);
+        queryString += ("&gender=" + encodeURI(playerGender));
+      }
+      var playerHandness = window.playerHandness;
+      if (playerHandness != null && playerHandness !== "") {
+        playerHandness = playerHandness.toLowerCase();
+        if (window.localStorage != null) window.localStorage.setItem("playerHandness", playerHandness);
+        queryString += ("&hand=" + encodeURI(playerHandness));
+      }
+      var selectedScene = map;
+      if (selectedScene != null && selectedScene !== "") {
+        window.loadScene(selectedScene, queryString);
+      }
+    };
+  </script>
+</body>
+</html>
