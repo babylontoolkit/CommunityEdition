@@ -1,0 +1,20 @@
+{
+  "name": "com.babylontoolkit.editor",
+  "displayName": "Babylon Toolkit",
+  "version": "7.24.1",
+  "unity": "2022.3",
+  "description": "Babylon Toolkit Community Edition",
+  "keywords": [
+    "tools",
+    "editor",
+    "toolkit",
+    "babylonjs"
+  ],
+  "category": "Editor",
+  "dependencies": {},
+  "author": {
+    "name": "CODEWRX",
+    "email": "mackeyk24@gmail.com",
+    "url": "https://www.babylontoolkit.com"
+  }
+}

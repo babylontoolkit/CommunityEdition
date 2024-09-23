@@ -1,0 +1,9 @@
+BabylonJS - Havok Build
+========================
+Havok Physics
+Provided By Microsoft
+
+
+Note: You must rename to lower case 'HavokPhysics.wasm' to 'havokphysics.wasm' for some
+internet provider policies that require exact name case match. We use lower case lib names
+by default.
