@@ -3732,7 +3732,7 @@ declare module BABYLON.GUI {
     /** Class used to provide 2D matrix features */
     export class Matrix2D {
         /** Gets the internal array of 6 floats used to store matrix data */
-        m: Float32Array;
+        m: Float32Array<ArrayBuffer>;
         /**
          * Creates a new matrix
          * @param m00 defines value for (0, 0)

@@ -806,7 +806,13 @@ declare module BABYLON.GLTF2.Loader {
     /**
      * Loader interface with additional members.
      */
+    /** @internal */
     export interface IKHRLightsPunctual_Light extends GLTF2.IKHRLightsPunctual_Light, IArrayItem {
+        /** @hidden */
+        _babylonLight?: Light;
+    }
+    /** @internal */
+    export interface IEXTLightsIES_Light extends GLTF2.IEXTLightsIES_Light, IArrayItem {
         /** @hidden */
         _babylonLight?: Light;
     }
@@ -1933,6 +1939,41 @@ declare module BABYLON {
 }
 declare module BABYLON.GLTF2.Loader.Extensions {
         /**
+     * Loader extension for KHR_node_hoverability
+     * @see https://github.com/KhronosGroup/glTF/pull/2426
+     */
+    export class KHR_node_hoverability implements BABYLON.GLTF2.IGLTFLoaderExtension {
+        /**
+         * The name of this extension.
+         */
+        readonly name = "KHR_node_hoverability";
+        /**
+         * Defines whether this extension is enabled.
+         */
+        enabled: boolean;
+        private _loader;
+        /**
+         * @internal
+         */
+        constructor(loader: BABYLON.GLTF2.GLTFLoader);
+        onReady(): Promise<void>;
+        dispose(): void;
+    }
+
+
+
+}
+declare module BABYLON {
+    interface GLTFLoaderExtensionOptions {
+        /**
+         * Defines options for the KHR_node_hoverability extension.
+         */
+        ["KHR_node_hoverability"]: {};
+    }
+
+}
+declare module BABYLON.GLTF2.Loader.Extensions {
+        /**
      * [Specification](https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_mesh_quantization/README.md)
      */
     export class KHR_mesh_quantization implements BABYLON.GLTF2.IGLTFLoaderExtension {
@@ -2726,9 +2767,9 @@ declare module BABYLON.GLTF2.Loader.Extensions {
          */
         readonly name = "KHR_draco_mesh_compression";
         /**
-         * The draco compression used to decode vertex data or DracoCompression.Default if not defined
+         * The draco decoder used to decode vertex data or DracoDecoder.Default if not defined
          */
-        dracoCompression?: DracoCompression;
+        dracoDecoder?: DracoDecoder;
         /**
          * Defines whether this extension is enabled.
          */
@@ -3047,6 +3088,15 @@ declare module BABYLON.GLTF2.Loader.Extensions {
                     };
                 };
             };
+            EXT_lights_ies: {
+                lights: {
+                    __array__: {
+                        __target__: boolean;
+                        color: LightAnimationPropertyInfo[];
+                        multiplier: LightAnimationPropertyInfo[];
+                    };
+                };
+            };
         };
     };
 
@@ -3343,6 +3393,48 @@ declare module BABYLON {
          * Defines options for the EXT_lights_image_based extension.
          */
         ["EXT_lights_image_based"]: {};
+    }
+
+}
+declare module BABYLON.GLTF2.Loader.Extensions {
+        /**
+     * [Specification](https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Vendor/EXT_lights_ies)
+     */
+    export class EXT_lights_ies implements BABYLON.GLTF2.IGLTFLoaderExtension {
+        /**
+         * The name of this extension.
+         */
+        readonly name = "EXT_lights_ies";
+        /**
+         * Defines whether this extension is enabled.
+         */
+        enabled: boolean;
+        /** hidden */
+        private _loader;
+        private _lights?;
+        /**
+         * @internal
+         */
+        constructor(loader: BABYLON.GLTF2.GLTFLoader);
+        /** @internal */
+        dispose(): void;
+        /** @internal */
+        onLoading(): void;
+        /**
+         * @internal
+         */
+        loadNodeAsync(context: string, node: BABYLON.GLTF2.Loader.INode, assign: (babylonTransformNode: TransformNode) => void): Nullable<Promise<TransformNode>>;
+    }
+
+
+
+}
+declare module BABYLON {
+    interface GLTFLoaderExtensionOptions {
+        /**
+         * Defines options for the EXT_lights_ies extension.
+         */
+        ["EXT_lights_ies"]: {};
     }
 
 }
@@ -4117,6 +4209,10 @@ declare module BABYLON {
          * Defines if buffers should be kept in memory for editing purposes
          */
         keepInRam?: boolean;
+        /**
+         * Spatial Y Flip for splat position and orientation
+         */
+        flipY?: boolean;
     };
 
 
