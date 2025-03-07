@@ -3927,6 +3927,7 @@ declare module BABYLON.GUI {
         private _cursorChanged;
         private _defaultMousePointerId;
         private _rootChildrenHaveChanged;
+        private _adjustToEngineHardwareScalingLevel;
         /** @internal */
         _capturedPointerIds: Set<number>;
         /** @internal */
@@ -3987,6 +3988,13 @@ declare module BABYLON.GUI {
          * If set to true, the POINTERTAP event type will be used for "click", instead of POINTERUP
          */
         usePointerTapForClickEvent: boolean;
+        /**
+         * If set to true, the renderScale will be adjusted automatically to the engine's hardware scaling
+         * If this is set to true, manually setting the renderScale will be ignored
+         * This is useful when the engine's hardware scaling is set to a value other than 1
+         */
+        get adjustToEngineHardwareScalingLevel(): boolean;
+        set adjustToEngineHardwareScalingLevel(value: boolean);
         /**
          * Gets or sets a number used to scale rendering size (2 means that the texture will be twice bigger).
          * Useful when you want more antialiasing
