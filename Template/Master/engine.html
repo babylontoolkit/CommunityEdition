@@ -631,12 +631,16 @@
     window.prepareBabylonEngineProperties = () => {
         // ************************************************************************ //
         window.audioEngineClicked = false;    
-        window.doAudioEngineClick = () => {
+        window.doAudioEngineClick = async () => {
             if (window.audioEngineClicked === false) {
-                if (BABYLON.Engine && BABYLON.Engine.audioEngine && BABYLON.Engine.audioEngine.unlock) {
-                    window.audioEngineClicked = true;
-                    try { BABYLON.Engine.audioEngine.unlock(); } catch {}
-                    document.removeEventListener("click", window.doAudioEngineClick);
+                if (TOOLKIT.AudioSource) {
+                    const audioEngine = await TOOLKIT.AudioSource.GetAudioEngine();
+                    if (audioEngine != null) {
+                        await audioEngine.unlock();
+                        window.audioEngineClicked = true;
+                        document.removeEventListener("click", window.doAudioEngineClick);
+                        BABYLON.Tools.Warn("Unlocked audio engine context");
+                    }
                 }
             }
         }
