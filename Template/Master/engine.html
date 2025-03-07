@@ -162,6 +162,7 @@
     var stencil = ###STENCIL###, preserve = ###PRESERVE###, profile = ###PERFORMANCE###, snapshot = ###RENDERING###;
     var showdetails = ###SHOWDETAILS###, showlabel = ###SHOWLABEL###;
     var gzipcontent = "###GZIP###";
+    var legacyAudio = ###LEGACYAUDIO###;
     var loaded = false, paused = false, reloader = false, downloaded = 0, edownloaded = 0;
     var kilobyte = 1024, megabyte = (kilobyte * kilobyte);
     var divcvs = document.getElementById("cvs");
@@ -605,7 +606,7 @@
             else if (profile === 2) cpuPerformanceProfile = "high-performance";
             if (renderengine === 1) {
                 if (navigator.gpu) {
-                    engine = new BABYLON.WebGPUEngine(divcvs, { antialias: antialias, powerPreference: gpuPerformanceProfile, enableAllFeatures:true, setMaximumLimits: true, doNotHandleContextLost: true });
+                    engine = new BABYLON.WebGPUEngine(divcvs, { audioEngine: legacyAudio, antialias: antialias, powerPreference: gpuPerformanceProfile, enableAllFeatures:true, setMaximumLimits: true, doNotHandleContextLost: true });
                     engine.initAsync({ jsPath: "###SCRIPT###/glslang.js", wasmPath: "###SCRIPT###/glslang.wasm" }).catch((ex) => { showErrorMessage(ex.message || "Unknown WebGPU Exception"); }).then(() => {
                         BABYLON.Tools.Log("WebGPU rendering engine enabled");
                         window.prepareBabylonEngineProperties();
@@ -617,11 +618,11 @@
                     });
                 } else {
                     BABYLON.Tools.Warn("WebGPU is not supported on platform. Falling back to WebGL");
-                    engine = new BABYLON.Engine(divcvs, antialias, { powerPreference: cpuPerformanceProfile, preserveDrawingBuffer: preserveDrawBuffer, stencil: useStencilBuffer, premultipliedAlpha: false, doNotHandleContextLost: true }, false);
+                    engine = new BABYLON.Engine(divcvs, antialias, { audioEngine: legacyAudio, powerPreference: cpuPerformanceProfile, preserveDrawingBuffer: preserveDrawBuffer, stencil: useStencilBuffer, premultipliedAlpha: false, doNotHandleContextLost: true }, false);
                     window.prepareBabylonEngineProperties();
                 }
             } else {
-                engine = new BABYLON.Engine(divcvs, antialias, { powerPreference: cpuPerformanceProfile, preserveDrawingBuffer: preserveDrawBuffer, stencil: useStencilBuffer, premultipliedAlpha: false, doNotHandleContextLost: true }, false);
+                engine = new BABYLON.Engine(divcvs, antialias, { audioEngine: legacyAudio, powerPreference: cpuPerformanceProfile, preserveDrawingBuffer: preserveDrawBuffer, stencil: useStencilBuffer, premultipliedAlpha: false, doNotHandleContextLost: true }, false);
                 window.prepareBabylonEngineProperties();
             }
         } catch (ex3) {
@@ -630,21 +631,25 @@
     };
     window.prepareBabylonEngineProperties = () => {
         // ************************************************************************ //
-        window.audioEngineClicked = false;    
-        window.doAudioEngineClick = async () => {
-            if (window.audioEngineClicked === false) {
-                if (TOOLKIT.AudioSource) {
-                    const audioEngine = await TOOLKIT.AudioSource.GetAudioEngine();
-                    if (audioEngine != null) {
-                        await audioEngine.unlock();
-                        window.audioEngineClicked = true;
-                        document.removeEventListener("click", window.doAudioEngineClick);
-                        BABYLON.Tools.Warn("Unlocked audio engine context");
+        if (!legacyAudio) {
+            window.audioEngineClicked = false;    
+            window.doAudioEngineClick = async () => {
+                if (window.audioEngineClicked === false) {
+                    if (TOOLKIT.AudioSource) {
+                        const audioEngine = await TOOLKIT.AudioSource.GetAudioEngine();
+                        if (audioEngine != null) {
+                            await audioEngine.unlock();
+                            window.audioEngineClicked = true;
+                            document.removeEventListener("click", window.doAudioEngineClick);
+                            BABYLON.Tools.Warn("Unlocked audio engine context");
+                        }
                     }
                 }
             }
+            document.addEventListener("click", window.doAudioEngineClick);
+        } else {
+            BABYLON.Tools.Warn("Legacy audio engine enabled");
         }
-        document.addEventListener("click", window.doAudioEngineClick);
         // ************************************************************************ //
         engine.loadingScreen = new LoadingScreen();
         engine.enableOfflineSupport = offline;
