@@ -8250,9 +8250,9 @@ declare module BABYLON.GUI {
          */
         getClassName(): string;
         /**
-         * Gets the destination input component
+         * Gets the target input component
          */
-        get destination(): BABYLON.NodeRenderGraphConnectionPoint;
+        get target(): BABYLON.NodeRenderGraphConnectionPoint;
         /**
          * Gets the output component
          */
@@ -8266,12 +8266,12 @@ declare module BABYLON.GUI {
      */
     export class FrameGraphGUITask extends BABYLON.FrameGraphTask {
         /**
-         * The destination texture to render the GUI to.
+         * The target texture to render the GUI to.
          */
-        destinationTexture: BABYLON.FrameGraphTextureHandle;
+        targetTexture: BABYLON.FrameGraphTextureHandle;
         /**
          * The output texture of the task.
-         * This is the same texture as the destination texture, but the handles are different!
+         * This is the same texture as the target texture, but the handles are different!
          */
         readonly outputTexture: BABYLON.FrameGraphTextureHandle;
         get disabled(): boolean;

@@ -2425,6 +2425,10 @@ declare module BABYLON {
          */
         ["KHR_materials_variants"]: Partial<{
             /**
+             * Specifies the name of the variant that should be selected by default.
+             */
+            defaultVariant: string;
+            /**
              * Defines a callback that will be called if material variants are loaded.
              * @experimental
              */
@@ -4988,7 +4992,7 @@ declare module BABYLON {
             /**
              * Defines options for the obj loader.
              */
-            [OBJFileLoaderMetadata.name]: {};
+            [OBJFileLoaderMetadata.name]: Partial<OBJLoadingOptions>;
         }
     /**
      * OBJ file type loader.
@@ -5054,7 +5058,7 @@ declare module BABYLON {
          *
          * @param loadingOptions options for loading and parsing OBJ/MTL files.
          */
-        constructor(loadingOptions?: OBJLoadingOptions);
+        constructor(loadingOptions?: Partial<Readonly<OBJLoadingOptions>>);
         private static get _DefaultLoadingOptions();
         /**
          * Calls synchronously the MTL file attached to this obj.
@@ -5068,11 +5072,8 @@ declare module BABYLON {
          * @param onFailure
          */
         private _loadMTL;
-        /**
-         * Instantiates a OBJ file loader plugin.
-         * @returns the created plugin
-         */
-        createPlugin(): ISceneLoaderPluginAsync | ISceneLoaderPlugin;
+        /** @internal */
+        createPlugin(options: SceneLoaderPluginOptions): ISceneLoaderPluginAsync | ISceneLoaderPlugin;
         /**
          * If the data string can be loaded directly.
          * @returns if the data can be loaded directly

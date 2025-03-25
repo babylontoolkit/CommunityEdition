@@ -631,25 +631,25 @@
     };
     window.prepareBabylonEngineProperties = () => {
         // ************************************************************************ //
-        if (!legacyAudio) {
-            window.audioEngineClicked = false;    
-            window.doAudioEngineClick = async () => {
-                if (window.audioEngineClicked === false) {
-                    if (TOOLKIT.AudioSource) {
-                        const audioEngine = await TOOLKIT.AudioSource.GetAudioEngine();
-                        if (audioEngine != null) {
-                            await audioEngine.unlock();
-                            window.audioEngineClicked = true;
-                            document.removeEventListener("click", window.doAudioEngineClick);
-                            BABYLON.Tools.Warn("Unlocked audio engine context");
-                        }
+        window.audioEngineClicked = false;    
+        window.doAudioEngineClick = async () => {
+            if (window.audioEngineClicked === false) {
+                window.audioEngineClicked = true;
+                document.removeEventListener("click", window.doAudioEngineClick);
+                if (legacyAudio === true) {
+                    if (TOOLKIT.AudioSource.UnlockLegacyAudio) {
+                        TOOLKIT.AudioSource.UnlockLegacyAudio();
+                        BABYLON.Tools.Warn("Unlocked legacy audio engine");
                     }
-                }
+                } else {
+                    if (TOOLKIT.AudioSource.UnlockAudioEngine) {
+                        await TOOLKIT.AudioSource.UnlockAudioEngine();
+                        BABYLON.Tools.Warn("Unlocked audio engine context");
+                    }
+                }   
             }
-            document.addEventListener("click", window.doAudioEngineClick);
-        } else {
-            BABYLON.Tools.Warn("Legacy audio engine enabled");
         }
+        document.addEventListener("click", window.doAudioEngineClick);
         // ************************************************************************ //
         engine.loadingScreen = new LoadingScreen();
         engine.enableOfflineSupport = offline;
