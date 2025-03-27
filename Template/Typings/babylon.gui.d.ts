@@ -4164,6 +4164,7 @@ declare module BABYLON.GUI {
          * Release all resources
          */
         dispose(): void;
+        private _alreadyRegisteredForRender;
         private _onResize;
         /** @internal */
         _getGlobalViewport(): BABYLON.Viewport;
