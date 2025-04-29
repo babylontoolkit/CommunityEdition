@@ -76,11 +76,14 @@
     <!-- ******************************** -->
     <!-- SCRIPT: Markup for this template -->
     <!-- ******************************** -->
-    <script type="text/javascript" src="###SCRIPT###/tweenjs.min.js"></script>
-    <script type="text/javascript" src="###SCRIPT###/fastclick.js"></script>
     <script type="text/javascript" src="###SCRIPT###/toaster.js"></script>
     <script type="text/javascript" src="###SCRIPT###/meter.js"></script>
-    <script type="text/javascript" src="###SCRIPT###/pep.js"></script>
+
+    <!-- Optional Libraries -->
+    <!-- <script type="text/javascript" src="###SCRIPT###/tweenjs.min.js"></script> -->
+    <!-- <script type="text/javascript" src="###SCRIPT###/hammer.min.js"></script> -->
+    <!-- <script type="text/javascript" src="###SCRIPT###/fastclick.js"></script> -->
+    <!-- <script type="text/javascript" src="###SCRIPT###/pep.js"></script> -->
 
     <!-- Engine Libraries -->
     <script type="text/javascript" src="###SCRIPT###/babylon.###MINMAX###.js"></script>
@@ -90,7 +93,6 @@
 
     ###ADDONS###
 
-    <script type="text/javascript" src="###SCRIPT###/babylon.earcut.js"></script>
     <script type="text/javascript" src="###SCRIPT###/babylon.toolkit.js"></script>
 
     <!-- Project Script Bundle -->
@@ -100,9 +102,9 @@
     <script type="text/javascript" nonce="###HASH###">
     window["BJS"] = "engine.html";
     ///////////////////////////////////////////////////////////
-    // Babylon Smooth Tween Mode
+    // Babylon Smooth Tween Mode (Optional)
     ///////////////////////////////////////////////////////////
-    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    // createjs.Ticker.timingMode = createjs.Ticker.RAF;
     ///////////////////////////////////////////////////////////
     // Babylon Query String Hooks
     ///////////////////////////////////////////////////////////

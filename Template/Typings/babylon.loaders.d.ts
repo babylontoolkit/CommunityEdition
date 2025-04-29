@@ -1766,6 +1766,14 @@ declare module BABYLON {
 }
 declare module BABYLON.GLTF2.Loader.Extensions {
         /**
+     * Adding an exception here will break traversing through the glTF object tree.
+     * This is used for properties that might not be in the glTF object model, but are optional and have a default value.
+     * For example, the path /nodes/\{\}/extensions/KHR_node_visibility/visible is optional - the object can be deferred without the object fully existing.
+     */
+    export var OptionalPathExceptionsList: {
+        regex: RegExp;
+    }[];
+    /**
      * A converter that takes a glTF Object Model JSON Pointer
      * and transforms it into an ObjectAccessorContainer, allowing
      * objects referenced in the glTF to be associated with their
@@ -3686,7 +3694,10 @@ declare module BABYLON.GLTF2.Loader.Extensions {
          * @param glTFObject the glTF object
          * @returns true if validated, false if not.
          */
-        validation?: (gltfBlock: BABYLON.GLTF2.IKHRInteractivity_Node, interactivityGraph: BABYLON.GLTF2.IKHRInteractivity_Graph, glTFObject?: BABYLON.GLTF2.Loader.IGLTF) => boolean;
+        validation?: (gltfBlock: BABYLON.GLTF2.IKHRInteractivity_Node, interactivityGraph: BABYLON.GLTF2.IKHRInteractivity_Graph, glTFObject?: BABYLON.GLTF2.Loader.IGLTF) => {
+            valid: boolean;
+            error?: string;
+        };
         /**
          * This is used if we need extra information for the constructor/options that is not provided directly by the glTF node.
          * This function can return more than one node, if extra nodes are needed for this block to function correctly.
