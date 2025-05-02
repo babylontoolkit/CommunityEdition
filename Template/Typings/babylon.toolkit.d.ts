@@ -6,7 +6,7 @@ declare namespace TOOLKIT {
     * @class SceneManager - All rights reserved (c) 2024 Mackey Kinard
     */
     class SceneManager {
-        /** Gets the toolkit framework version number */
+        /** Gets the toolkit framework version number (8.5.0 - R1) */
         static get Version(): string;
         /** Gets the toolkit framework copyright notice */
         static get Copyright(): string;
@@ -34,7 +34,7 @@ declare namespace TOOLKIT {
         static SupportSRGBBuffers: boolean;
         /** The animation start mode. Defaults to NONE. */
         static AnimationStartMode: number;
-        /** When loading glTF animations, which are defined in seconds, target them to this FPS. Defaults to 30 for for new behavior. Set to 1 for old behavior */
+        /** When loading glTF animations, which are defined in seconds, target them to this FPS. Defaults to 60 for new behavior. Set to 1 for old behavior */
         static AnimationTargetFps: number;
         /** Set the default convex hull shape margin size */
         static DefaultConvexHullMargin: number;
@@ -86,7 +86,6 @@ declare namespace TOOLKIT {
         private static _EventBus;
         /** Default global event message bus
          * @example
-         * ```typescript
          * // Handle myevent message
          * TOOLKIT.SceneManager.EventBus.OnMessage("myevent", (data:string) => {
          *    console.log("My Event Data: " + data);
@@ -94,7 +93,6 @@ declare namespace TOOLKIT {
          *
          * // Post myevent message
          * TOOLKIT.SceneManager.EventBus.PostMessage("myevent", "Hello World!");
-         * ```
         */
         static get EventBus(): TOOLKIT.GlobalMessageBus;
         /** Gets the babylon toolkit playground default project script bundle cdn address
@@ -2609,6 +2607,13 @@ declare namespace TOOLKIT {
         static MobileControlsActive: boolean;
         /** Is mobile pinch zoom tracking enabled */
         static EnablePinchZoomTracking: boolean;
+        /** Enable user input state in the scene. */
+        static EnableUserInput(engine: BABYLON.AbstractEngine, scene: BABYLON.Scene, options?: {
+            contextMenu?: boolean;
+            pointerLock?: boolean;
+            preventDefault?: boolean;
+            useCapture?: boolean;
+        }): void;
         /** Configure user input state in the scene. */
         static ConfigureUserInput(engine: BABYLON.AbstractEngine, scene: BABYLON.Scene, options?: {
             contextMenu?: boolean;
