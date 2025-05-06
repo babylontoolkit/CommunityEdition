@@ -106,7 +106,7 @@ declare module BABYLON {
         /**
          * The object that represents the glTF JSON.
          */
-        json: Object;
+        json: object;
         /**
          * The BIN chunk of a binary glTF.
          */
@@ -492,7 +492,7 @@ declare module BABYLON {
         /**
          * @internal
          */
-        directLoad(scene: Scene, data: string): Promise<Object>;
+        directLoad(scene: Scene, data: string): Promise<object>;
         /**
          * The callback that allows custom handling of the root url based on the response url.
          * @param rootUrl the original root url
@@ -1840,7 +1840,7 @@ declare module BABYLON.GLTF2.Loader.Extensions {
         constructor(loader: BABYLON.GLTF2.GLTFLoader);
         /** @internal */
         dispose(): void;
-        /** @internal */
+        /** @internal*/
         loadMaterialPropertiesAsync(context: string, material: BABYLON.GLTF2.Loader.IMaterial, babylonMaterial: Material): Nullable<Promise<void>>;
     }
 
@@ -4090,7 +4090,7 @@ declare module BABYLON.GLTF1 {
         extensions?: {
             [key: string]: any;
         };
-        extras?: Object;
+        extras?: object;
     }
     /** @internal */
     export interface IGLTFChildRootProperty extends IGLTFProperty {
@@ -4146,7 +4146,7 @@ declare module BABYLON.GLTF1 {
     /** @internal */
     export interface IGLTFTechniqueCommonProfile {
         lightingModel: string;
-        texcoordBindings: Object;
+        texcoordBindings: object;
         parameters?: Array<any>;
     }
     /** @internal */
@@ -4372,7 +4372,7 @@ declare module BABYLON.GLTF1 {
         skins: {
             [key: string]: IGLTFSkins;
         };
-        currentScene?: Object;
+        currentScene?: object;
         scenes: {
             [key: string]: IGLTFScene;
         };
@@ -4743,8 +4743,8 @@ declare module BABYLON {
         importMeshAsync(meshesNames: any, scene: Scene, data: any, rootUrl: string, onProgress?: (event: ISceneLoaderProgressEvent) => void, fileName?: string): Promise<ISceneLoaderAsyncResult>;
         private static _BuildPointCloud;
         private static _BuildMesh;
-        private _parseSPZ;
-        private _parse;
+        private _parseSPZAsync;
+        private _parseAsync;
         /**
          * Load into an asset container.
          * @param scene The scene to load into
@@ -5125,7 +5125,7 @@ declare module BABYLON {
          * @param rootUrl defines the path to the folder
          * @returns the list of loaded meshes
          */
-        private _parseSolid;
+        private _parseSolidAsync;
     }
 
 
@@ -5168,6 +5168,100 @@ declare module BABYLON {
     }
 
 
+
+
+
+
+    /**
+     * Options for loading BVH files
+     */
+    export type BVHLoadingOptions = {
+        /**
+         * Defines the loop mode of the animation to load.
+         */
+        loopMode: number;
+    };
+
+
+    /**
+     * Reads a BVH file, returns a skeleton
+     * @param text - The BVH file content
+     * @param scene - The scene to add the skeleton to
+     * @param loadingOptions - The loading options
+     * @returns The skeleton
+     */
+    export function ReadBvh(text: string, scene: Scene, loadingOptions: BVHLoadingOptions): Skeleton;
+
+
+    export var BVHFileLoaderMetadata: {
+        readonly name: "bvh";
+        readonly extensions: {
+            readonly ".bvh": {
+                readonly isBinary: false;
+            };
+        };
+    };
+
+
+        interface SceneLoaderPluginOptions {
+            /**
+             * Defines options for the bvh loader.
+             */
+            [BVHFileLoaderMetadata.name]: Partial<BVHLoadingOptions>;
+        }
+    /**
+     * @experimental
+     * BVH file type loader.
+     * This is a babylon scene loader plugin.
+     */
+    export class BVHFileLoader implements ISceneLoaderPluginAsync, ISceneLoaderPluginFactory {
+        /**
+         * Name of the loader ("bvh")
+         */
+        readonly name: "bvh";
+        /** @internal */
+        readonly extensions: {
+            readonly ".bvh": {
+                readonly isBinary: false;
+            };
+        };
+        private readonly _loadingOptions;
+        /**
+         * Creates loader for bvh motion files
+         * @param loadingOptions - Options for the bvh loader
+         */
+        constructor(loadingOptions?: Partial<Readonly<BVHLoadingOptions>>);
+        private static get _DefaultLoadingOptions();
+        /** @internal */
+        createPlugin(options: SceneLoaderPluginOptions): ISceneLoaderPluginAsync;
+        /**
+         * If the data string can be loaded directly.
+         * @returns if the data can be loaded directly
+         */
+        canDirectLoad(): boolean;
+        /**
+         * Imports  from the loaded gaussian splatting data and adds them to the scene
+         * @param _meshesNames a string or array of strings of the mesh names that should be loaded from the file
+         * @param scene the scene the meshes should be added to
+         * @param data the bvh data to load
+         * @returns a promise containing the loaded skeletons and animations
+         */
+        importMeshAsync(_meshesNames: string | readonly string[] | null | undefined, scene: Scene, data: unknown): Promise<ISceneLoaderAsyncResult>;
+        /**
+         * Imports all objects from the loaded bvh data and adds them to the scene
+         * @param scene the scene the objects should be added to
+         * @param data the bvh data to load
+         * @returns a promise which completes when objects have been loaded to the scene
+         */
+        loadAsync(scene: Scene, data: unknown): Promise<void>;
+        /**
+         * Load into an asset container.
+         * @param scene The scene to load into
+         * @param data The data to import
+         * @returns The loaded asset container
+         */
+        loadAssetContainerAsync(scene: Scene, data: unknown): Promise<AssetContainer>;
+    }
 
 
 

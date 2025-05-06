@@ -4858,7 +4858,7 @@ declare module BABYLON.GUI {
      * Forcing an export so that this code will execute
      * @internal
      */
-    const name = "Statics";
+    const Name = "Statics";
 
 
     /**
