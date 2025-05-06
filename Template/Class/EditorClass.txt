@@ -4,9 +4,9 @@ using UnityEditor;
 using UnityEngine;
 
 /**
-* Editor Script Component
-* @class #EDITORSCRIPT#
-*/
+ * Editor Script Component
+ * @class #EDITORSCRIPT#
+ */
 [Babylon(Class="#ROOTNAMESPACE#.#BACKINGCLASS#"), AddComponentMenu("Scripts/My Project/#SCRIPTNAME#")]
 public class #SCRIPTNAME# : EditorScriptComponent
 {
@@ -21,7 +21,9 @@ public class #SCRIPTNAME# : EditorScriptComponent
     }
 }
 
-// Optional Script Component Custom Editor Class
+/**
+ * Optional Script Component Custom Editor Class
+ */
 [CustomEditor(typeof(#SCRIPTNAME#)), CanEditMultipleObjects]
 public class #SCRIPTNAME#Editor : Editor
 {

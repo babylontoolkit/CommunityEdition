@@ -1,10 +1,12 @@
 namespace #ROOTNAMESPACE# {
     /**
-    * Babylon Script Component
-    * @class #BACKINGCLASS#
-    */
+     * Babylon Script Component
+     * @class #BACKINGCLASS#
+     */
     export class #BACKINGCLASS# extends TOOLKIT.ScriptComponent {
-        // Example: private helloWorld:string = "Hello World";
+        constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties?: any) {
+            super(transform, scene, properties, "#ROOTNAMESPACE#.#BACKINGCLASS#");
+        }
 
         protected awake(): void {
             /* Init component function */
