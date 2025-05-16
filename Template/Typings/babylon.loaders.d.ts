@@ -3350,6 +3350,50 @@ declare module BABYLON {
 
 }
 declare module BABYLON.GLTF2.Loader.Extensions {
+        /**
+     * [Specification](https://github.com/KhronosGroup/glTF/blob/fdee35425ae560ea378092e38977216d63a094ec/extensions/2.0/Khronos/EXT_materials_diffuse_roughness/README.md)
+     * @experimental
+     */
+    export class EXT_materials_diffuse_roughness implements BABYLON.GLTF2.IGLTFLoaderExtension {
+        /**
+         * The name of this extension.
+         */
+        readonly name = "EXT_materials_diffuse_roughness";
+        /**
+         * Defines whether this extension is enabled.
+         */
+        enabled: boolean;
+        /**
+         * Defines a number that determines the order the extensions are applied.
+         */
+        order: number;
+        private _loader;
+        /**
+         * @internal
+         */
+        constructor(loader: BABYLON.GLTF2.GLTFLoader);
+        /** @internal */
+        dispose(): void;
+        /**
+         * @internal
+         */
+        loadMaterialPropertiesAsync(context: string, material: BABYLON.GLTF2.Loader.IMaterial, babylonMaterial: Material): Nullable<Promise<void>>;
+        private _loadDiffuseRoughnessPropertiesAsync;
+    }
+
+
+
+}
+declare module BABYLON {
+    interface GLTFLoaderExtensionOptions {
+        /**
+         * Defines options for the EXT_materials_diffuse_roughness extension.
+         */
+        ["EXT_materials_diffuse_roughness"]: {};
+    }
+
+}
+declare module BABYLON.GLTF2.Loader.Extensions {
             /** @internal */
         interface IEXTLightsImageBased_LightImageBased {
             _babylonTexture?: BaseTexture;
@@ -5187,10 +5231,11 @@ declare module BABYLON {
      * Reads a BVH file, returns a skeleton
      * @param text - The BVH file content
      * @param scene - The scene to add the skeleton to
+     * @param assetContainer - The asset container to add the skeleton to
      * @param loadingOptions - The loading options
      * @returns The skeleton
      */
-    export function ReadBvh(text: string, scene: Scene, loadingOptions: BVHLoadingOptions): Skeleton;
+    export function ReadBvh(text: string, scene: Scene, assetContainer: Nullable<AssetContainer>, loadingOptions: BVHLoadingOptions): Skeleton;
 
 
     export var BVHFileLoaderMetadata: {

@@ -4913,8 +4913,9 @@ declare module BABYLON.GUI {
          * Serializes the current control
          * @param serializationObject defined the JSON serialized object
          * @param force force serialization even if isSerializable === false
+         * @param allowCanvas defines if the control is allowed to use a Canvas2D object to serialize
          */
-        serialize(serializationObject: any, force: boolean): void;
+        serialize(serializationObject: any, force: boolean, allowCanvas: boolean): void;
         /**
          * @internal
          */
@@ -6080,8 +6081,9 @@ declare module BABYLON.GUI {
          * Serializes the current control
          * @param serializationObject defined the JSON serialized object
          * @param force force serialization even if isSerializable === false
+         * @param allowCanvas defines if the control is allowed to use a Canvas2D object to serialize
          */
-        serialize(serializationObject: any, force: boolean): void;
+        serialize(serializationObject: any, force: boolean, allowCanvas: boolean): void;
         /**
          * @internal
          */
@@ -7525,8 +7527,9 @@ declare module BABYLON.GUI {
          * Serializes the current button
          * @param serializationObject defines the JSON serialized object
          * @param force force serialization even if isSerializable === false
+         * @param allowCanvas defines if the control is allowed to use a Canvas2D object to serialize
          */
-        serialize(serializationObject: any, force: boolean): void;
+        serialize(serializationObject: any, force: boolean, allowCanvas: boolean): void;
         /**
          * @internal
          */
