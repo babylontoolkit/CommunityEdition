@@ -4780,11 +4780,11 @@ declare module BABYLON {
          * @param scene the scene the meshes should be added to
          * @param data the gaussian splatting data to load
          * @param rootUrl root url to load from
-         * @param onProgress callback called while file is loading
-         * @param fileName Defines the name of the file to load
+         * @param _onProgress callback called while file is loading
+         * @param _fileName Defines the name of the file to load
          * @returns a promise containing the loaded meshes, particles, skeletons and animations
          */
-        importMeshAsync(meshesNames: any, scene: Scene, data: any, rootUrl: string, onProgress?: (event: ISceneLoaderProgressEvent) => void, fileName?: string): Promise<ISceneLoaderAsyncResult>;
+        importMeshAsync(meshesNames: any, scene: Scene, data: any, rootUrl: string, _onProgress?: (event: ISceneLoaderProgressEvent) => void, _fileName?: string): Promise<ISceneLoaderAsyncResult>;
         private static _BuildPointCloud;
         private static _BuildMesh;
         private _parseSPZAsync;
