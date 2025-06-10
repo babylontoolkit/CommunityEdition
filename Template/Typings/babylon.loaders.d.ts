@@ -3502,7 +3502,7 @@ declare module BABYLON.GLTF2.Loader.Extensions {
     export class InteractivityGraphToFlowGraphParser {
         private _interactivityGraph;
         private _gltf;
-        _loader: BABYLON.GLTF2.GLTFLoader;
+        _animationTargetFps: number;
         /**
          * Note - the graph should be rejected if the same type is defined twice.
          * We currently don't validate that.
@@ -3513,7 +3513,7 @@ declare module BABYLON.GLTF2.Loader.Extensions {
         private _events;
         private _internalEventsCounter;
         private _nodes;
-        constructor(_interactivityGraph: BABYLON.GLTF2.IKHRInteractivity_Graph, _gltf: BABYLON.GLTF2.Loader.IGLTF, _loader: BABYLON.GLTF2.GLTFLoader);
+        constructor(_interactivityGraph: BABYLON.GLTF2.IKHRInteractivity_Graph, _gltf: BABYLON.GLTF2.Loader.IGLTF, _animationTargetFps?: number);
         get arrays(): {
             types: {
                 length: number;
@@ -3835,8 +3835,8 @@ declare module BABYLON.GLTF2.Loader.Extensions {
        - Normalize (`math/normalize`) FlowGraphBlockNames.Normalize
        - Dot Product (`math/dot`) FlowGraphBlockNames.Dot
        - Cross Product (`math/cross`) FlowGraphBlockNames.Cross
-       - Rotate 2D (`math/rotate2d`) FlowGraphBlockNames.Rotate2D
-       - Rotate 3D (`math/rotate3d`) FlowGraphBlockNames.Rotate3D
+       - Rotate 2D (`math/rotate2D`) FlowGraphBlockNames.Rotate2D
+       - Rotate 3D (`math/rotate3D`) FlowGraphBlockNames.Rotate3D
        - Transform (`math/transform`) FlowGraphBlockNames.TransformVector
     9. **Matrix Nodes**
        - Transpose (`math/transpose`) FlowGraphBlockNames.Transpose
