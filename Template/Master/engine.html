@@ -39,15 +39,143 @@
     ###NETWORK###
 </head>
 <body touch-action="none">
+    <script type="text/javascript" nonce="none">
+        window._loadingDiv = null;
+        window._loadingStyle = null;
+        window._loadingTextDiv = null;
+        window.showSplashLoadingScreen = () => {
+            const svgSupport = !!window.SVGSVGElement;
+            // Loading div
+            const loadingDiv = document.createElement("div");
+            loadingDiv.id = "babylonjsLoadingDiv";
+            loadingDiv.style.backgroundColor = "###SPLASH###";
+            loadingDiv.style.opacity = "1";
+            loadingDiv.style.transition = "opacity 1.5s ease";
+            loadingDiv.style.pointerEvents = "none";
+            loadingDiv.style.display = "grid";
+            loadingDiv.style.gridTemplateRows = "100%";
+            loadingDiv.style.gridTemplateColumns = "100%";
+            loadingDiv.style.justifyItems = "center";
+            loadingDiv.style.alignItems = "center";
+            loadingDiv.style.zIndex = "10001";
+            window._loadingDiv = loadingDiv;
+            // Loading text
+            const loadingTextDiv = document.createElement("div");
+            loadingTextDiv.id = "babylonjsLoadingTextDiv";
+            loadingTextDiv.style.position = "absolute";
+            loadingTextDiv.style.left = "0";
+            loadingTextDiv.style.top = "50%";
+            loadingTextDiv.style.marginTop = "80px";
+            loadingTextDiv.style.width = "100%";
+            loadingTextDiv.style.height = "20px";
+            loadingTextDiv.style.fontFamily = "Arial";
+            loadingTextDiv.style.fontSize = "14px";
+            loadingTextDiv.style.color = "white";
+            loadingTextDiv.style.textAlign = "center";
+            loadingTextDiv.style.zIndex = "1";
+            loadingTextDiv.innerHTML = "";
+            window._loadingTextDiv = loadingTextDiv;
+            loadingDiv.appendChild(loadingTextDiv);
+            // Generating keyframes
+            const loadingStyle = document.createElement("style");
+            const keyFrames = `@-webkit-keyframes spin1 {\
+                                0% { -webkit-transform: rotate(0deg);}
+                                100% { -webkit-transform: rotate(360deg);}
+                            }\
+                            @keyframes spin1 {\
+                                0% { transform: rotate(0deg);}
+                                100% { transform: rotate(360deg);}
+                            }`;
+            loadingStyle.innerHTML = keyFrames;
+            window._loadingStyle = loadingStyle;
+            document.getElementsByTagName("head")[0].appendChild(loadingStyle);
+            // Loading img
+            const imgBack = new Image();
+            imgBack.id = "babylonjsLoadingImage";
+            imgBack.src = !svgSupport
+                ? "https://cdn.babylonjs.com/Assets/babylonLogo.png"
+                : `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAuMTcgMjA4LjA0Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6I2UwNjg0Yjt9LmNscy0ze2ZpbGw6I2JiNDY0Yjt9LmNscy00e2ZpbGw6I2UwZGVkODt9LmNscy01e2ZpbGw6I2Q1ZDJjYTt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPkJhYnlsb25Mb2dvPC90aXRsZT48ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIj48ZyBpZD0iUGFnZV9FbGVtZW50cyIgZGF0YS1uYW1lPSJQYWdlIEVsZW1lbnRzIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik05MC4wOSwwLDAsNTJWMTU2bDkwLjA5LDUyLDkwLjA4LTUyVjUyWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxODAuMTcgNTIuMDEgMTUxLjk3IDM1LjczIDEyNC44NSA1MS4zOSAxNTMuMDUgNjcuNjcgMTgwLjE3IDUyLjAxIi8+PHBvbHlnb24gY2xhc3M9ImNscy0yIiBwb2ludHM9IjI3LjEyIDY3LjY3IDExNy4yMSAxNS42NiA5MC4wOCAwIDAgNTIuMDEgMjcuMTIgNjcuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iNjEuODkgMTIwLjMgOTAuMDggMTM2LjU4IDExOC4yOCAxMjAuMyA5MC4wOCAxMDQuMDIgNjEuODkgMTIwLjMiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTUzLjA1IDY3LjY3IDE1My4wNSAxNDAuMzcgOTAuMDggMTc2LjcyIDI3LjEyIDE0MC4zNyAyNy4xMiA2Ny42NyAwIDUyLjAxIDAgMTU2LjAzIDkwLjA4IDIwOC4wNCAxODAuMTcgMTU2LjAzIDE4MC4xNyA1Mi4wMSAxNTMuMDUgNjcuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iOTAuMDggNzEuNDYgNjEuODkgODcuNzQgNjEuODkgMTIwLjMgOTAuMDggMTA0LjAyIDExOC4yOCAxMjAuMyAxMTguMjggODcuNzQgOTAuMDggNzEuNDYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTUzLjA1IDY3LjY3IDExOC4yOCA4Ny43NCAxMTguMjggMTIwLjMgOTAuMDggMTM2LjU4IDkwLjA4IDE3Ni43MiAxNTMuMDUgMTQwLjM3IDE1My4wNSA2Ny42NyIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtNSIgcG9pbnRzPSIyNy4xMiA2Ny42NyA2MS44OSA4Ny43NCA2MS44OSAxMjAuMyA5MC4wOCAxMzYuNTggOTAuMDggMTc2LjcyIDI3LjEyIDE0MC4zNyAyNy4xMiA2Ny42NyIvPjwvZz48L2c+PC9zdmc+`;
+            imgBack.style.width = "150px";
+            imgBack.style.gridColumn = "1";
+            imgBack.style.gridRow = "1";
+            imgBack.style.top = "50%";
+            imgBack.style.left = "50%";
+            imgBack.style.transform = "translate(-50%, -50%)";
+            imgBack.style.position = "absolute";
+            // Spinner box
+            const imageSpinnerContainer = document.createElement("div");
+            imageSpinnerContainer.style.width = "300px";
+            imageSpinnerContainer.style.gridColumn = "1";
+            imageSpinnerContainer.style.gridRow = "1";
+            imageSpinnerContainer.style.top = "50%";
+            imageSpinnerContainer.style.left = "50%";
+            imageSpinnerContainer.style.transform = "translate(-50%, -50%)";
+            imageSpinnerContainer.style.position = "absolute";
+            // Loading spinner
+            const imgSpinner = new Image();
+            imgSpinner.id = "babylonjsLoadingSpinner";
+            imgSpinner.src = !svgSupport
+                ? "https://cdn.babylonjs.com/Assets/loadingIcon.png"
+                : `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzOTIgMzkyIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwNjg0Yjt9LmNscy0ye2ZpbGw6bm9uZTt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlNwaW5uZXJJY29uPC90aXRsZT48ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIj48ZyBpZD0iU3Bpbm5lciI+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNDAuMjEsMTI2LjQzYzMuNy03LjMxLDcuNjctMTQuNDQsMTItMjEuMzJsMy4zNi01LjEsMy41Mi01YzEuMjMtMS42MywyLjQxLTMuMjksMy42NS00LjkxczIuNTMtMy4yMSwzLjgyLTQuNzlBMTg1LjIsMTg1LjIsMCwwLDEsODMuNCw2Ny40M2EyMDgsMjA4LDAsMCwxLDE5LTE1LjY2YzMuMzUtMi40MSw2Ljc0LTQuNzgsMTAuMjUtN3M3LjExLTQuMjgsMTAuNzUtNi4zMmM3LjI5LTQsMTQuNzMtOCwyMi41My0xMS40OSwzLjktMS43Miw3Ljg4LTMuMywxMi00LjY0YTEwNC4yMiwxMDQuMjIsMCwwLDEsMTIuNDQtMy4yMyw2Mi40NCw2Mi40NCwwLDAsMSwxMi43OC0xLjM5QTI1LjkyLDI1LjkyLDAsMCwxLDE5NiwyMS40NGE2LjU1LDYuNTUsMCwwLDEsMi4wNSw5LDYuNjYsNi42NiwwLDAsMS0xLjY0LDEuNzhsLS40MS4yOWEyMi4wNywyMi4wNywwLDAsMS01Ljc4LDMsMzAuNDIsMzAuNDIsMCwwLDEtNS42NywxLjYyLDM3LjgyLDM3LjgyLDAsMCwxLTUuNjkuNzFjLTEsMC0xLjkuMTgtMi44NS4yNmwtMi44NS4yNHEtNS43Mi41MS0xMS40OCwxLjFjLTMuODQuNC03LjcxLjgyLTExLjU4LDEuNGExMTIuMzQsMTEyLjM0LDAsMCwwLTIyLjk0LDUuNjFjLTMuNzIsMS4zNS03LjM0LDMtMTAuOTQsNC42NHMtNy4xNCwzLjUxLTEwLjYsNS41MUExNTEuNiwxNTEuNiwwLDAsMCw2OC41Niw4N0M2Ny4yMyw4OC40OCw2Niw5MCw2NC42NCw5MS41NnMtMi41MSwzLjE1LTMuNzUsNC43M2wtMy41NCw0LjljLTEuMTMsMS42Ni0yLjIzLDMuMzUtMy4zMyw1YTEyNywxMjcsMCwwLDAtMTAuOTMsMjEuNDksMS41OCwxLjU4LDAsMSwxLTMtMS4xNVM0MC4xOSwxMjYuNDcsNDAuMjEsMTI2LjQzWiIvPjxyZWN0IGNsYXNzPSJjbHMtMiIgd2lkdGg9IjM5MiIgaGVpZ2h0PSIzOTIiLz48L2c+PC9nPjwvc3ZnPg==`;
+            imgSpinner.style.animation = "spin1 0.75s infinite linear";
+            imgSpinner.style.transformOrigin = "50% 50%";
+            // Is SVG supportted?
+            if (!svgSupport) {
+                const logoSize = { w: 16, h: 18.5 };
+                const loadingSize = { w: 30, h: 30 };
+                // set styling correctly
+                imgBack.style.width = `${logoSize.w}vh`;
+                imgBack.style.height = `${logoSize.h}vh`;
+                imgBack.style.left = `calc(50% - ${logoSize.w / 2}vh)`;
+                imgBack.style.top = `calc(50% - ${logoSize.h / 2}vh)`;
+                // set styling correctly
+                imgSpinner.style.width = `${loadingSize.w}vh`;
+                imgSpinner.style.height = `${loadingSize.h}vh`;
+                imgSpinner.style.left = `calc(50% - ${loadingSize.w / 2}vh)`;
+                imgSpinner.style.top = `calc(50% - ${loadingSize.h / 2}vh)`;
+            }
+            imageSpinnerContainer.appendChild(imgSpinner);
+            loadingDiv.appendChild(imgBack);
+            loadingDiv.appendChild(imageSpinnerContainer);
+            document.body.appendChild(loadingDiv);
+            // ..
+            // Handle Hide Loading Div
+            // ..
+            const onTransitionEnd = (event) => {
+                if (window._loadingDiv) {
+                    window._loadingDiv.remove();
+                }
+                if (window._loadingTextDiv) {
+                    window._loadingTextDiv.remove();
+                    window._loadingTextDiv = null;
+                }
+                if (window._loadingStyle) {
+                    window._loadingStyle.remove();
+                    window._loadingStyle = null;
+                }
+                window.removeEventListener("transitionend", onTransitionEnd);
+            };
+            window._loadingDiv.addEventListener("transitionend", onTransitionEnd);
+        };
+        window.hideSplashLoadingScreen = () => {
+            if (window._loadingDiv) {
+                window._loadingDiv.style.opacity = "0";
+            }
+            if (divcvs) {
+                divcvs.style.opacity = "1";
+            }
+        };
+        window.showSplashLoadingScreen();
+    </script>
     <!-- ******************************** -->
     <!-- CUSTOM: Loader for this template -->
     <!-- ******************************** -->
-    <div id="splash">
+    <div id="splash" style="display: none;">
         <div id="panel">
             <center>
                 <div id="proj" style="visibility:###SHOWTITLE###;">###TITLE###</div>
                 <div id="load" class="load"></div>
-                <img id="logo" src="###LOGO###"></img>
+                <!-- <img id="logo" src="###LOGO###"></img> -->
                 <div id="details"></div>
                 <div id="status"></div>
             </center>
@@ -174,6 +302,7 @@
     var loader = document.getElementById("load");
     var label = document.getElementById("status");
     var details = document.getElementById("details");
+    if (divcvs) divcvs.style.transition = "opacity 1.5s ease";
     // ************************************************************************ //
     // QUERY STRING - Parse Root Urls And Scene Name Parameters                 //
     // ************************************************************************ //
@@ -181,7 +310,8 @@
     if (rooturl != null && rooturl !== "" && !rooturl.endsWith("/")) rooturl += "/";
     var sceneurl = "" + (window.getUrlParameter("path") || folder);
     if (sceneurl != null && sceneurl !== "" && !sceneurl.endsWith("/")) sceneurl += "/";
-    var scenename = "" + (window.getUrlParameter("scene") || defaultScene);
+    if (defaultScene != null && defaultScene === "") defaultScene = null;
+    var scenename = "" + (defaultScene || window.getUrlParameter("scene") || null);
     var scenepath = "" + (rooturl + sceneurl);
     var adaptparam = window.getUrlParameter("adaptive");
     if (adaptparam != null && adaptparam !== "") {
@@ -325,8 +455,9 @@
         if (standalone_warning != null) standalone_warning.style.display = "none";
         // ..
         engine.hideLoadingUI();
-        divcvs.style.opacity = "1";
+        // MOVED: divcvs.style.opacity = "1";
         window.updateStatus("", "", 0);
+        window.hideSplashLoadingScreen();
         if (TOOLKIT.SceneManager.OnLoadCompleteObservable.hasObservers() === true) {
             TOOLKIT.SceneManager.OnLoadCompleteObservable.notifyObservers(engine);
         }
@@ -609,7 +740,7 @@
             if (renderengine === 1) {
                 if (navigator.gpu) {
                     engine = new BABYLON.WebGPUEngine(divcvs, { audioEngine: legacyAudio, antialias: antialias, powerPreference: gpuPerformanceProfile, enableAllFeatures:true, setMaximumLimits: true, doNotHandleContextLost: true });
-                    engine.initAsync({ jsPath: "###SCRIPT###/glslang.js", wasmPath: "###SCRIPT###/glslang.wasm" }).catch((ex) => { showErrorMessage(ex.message || "Unknown WebGPU Exception"); }).then(() => {
+                    engine.initAsync({ jsPath: "###SCRIPT###/glslang.js", wasmPath: "###SCRIPT###/glslang.wasm" }, { jsPath: "###SCRIPT###/twgsl.js", wasmPath: "###SCRIPT###/twgsl.wasm" }).catch((ex) => { showErrorMessage(ex.message || "Unknown WebGPU Exception"); }).then(() => {
                         BABYLON.Tools.Log("WebGPU rendering engine enabled");
                         window.prepareBabylonEngineProperties();
                         if (snapshot === 1) {
