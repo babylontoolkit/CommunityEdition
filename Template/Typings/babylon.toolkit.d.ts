@@ -6,7 +6,7 @@ declare namespace TOOLKIT {
     * @class SceneManager - All rights reserved (c) 2024 Mackey Kinard
     */
     class SceneManager {
-        /** Gets the toolkit framework version number (8.12.32 - R1) */
+        /** Gets the toolkit framework version number (8.12.250 - R1) */
         static get Version(): string;
         /** Gets the toolkit framework copyright notice */
         static get Copyright(): string;
@@ -62,6 +62,10 @@ declare namespace TOOLKIT {
         static ParseScriptComponents: boolean;
         /** Set the auto load script bundles flag */
         static AutoLoadScriptBundles: boolean;
+        /** Set the ES6 strip namespace prefix flag */
+        static AutoStripNamespacePrefix: boolean;
+        /** Set the universal module definition flag */
+        static UniversalModuleDefinition: boolean;
         /** Returns a Promise that resolves after the specfied time */
         static WaitForSeconds: (seconds: number) => Promise<void>;
         /** Register handler that is triggered before the main scene render loop (engine.html) */
@@ -82,7 +86,12 @@ declare namespace TOOLKIT {
         static CVTOOLS_NAME: string;
         static CVTOOLS_MESH: string;
         static CVTOOLS_HAND: string;
+        static CVTOOLS_NAME_REGISTERED: boolean;
+        static CVTOOLS_MESH_REGISTERED: boolean;
+        static CVTOOLS_HAND_REGISTERED: boolean;
         static GetEngine(scene: BABYLON.Scene): BABYLON.Engine | BABYLON.WebGPUEngine;
+        static GetClass(name: string): any;
+        static RegisterClass(name: string, klass: any): void;
         private static _EventBus;
         /** Default global event message bus
          * @example
@@ -105,14 +114,14 @@ declare namespace TOOLKIT {
          */
         static get PlaygroundRepo(): string;
         /**
-         * Initialize the babylon toolkit playground environment
+         * Initialize the babylon toolkit playground environment (GLTF)
          * @param engine The engine instance.
          * @param options The playground options.
          * @returns a waitable promise.
          */
         static InitializePlayground(engine: BABYLON.Engine | BABYLON.WebGPUEngine | BABYLON.AbstractEngine, options?: TOOLKIT.IPlaygroundOptions): Promise<void>;
         /**
-         * Initialize the babylon toolkit runtime environment
+         * Initialize the babylon toolkit runtime environment (GLTF)
          * @param engine The engine instance.
          * @param options The playground options.
          * @returns a waitable promise.
@@ -474,6 +483,1111 @@ declare namespace TOOLKIT {
         private static GotoFullscreenBrowser;
         private static RequestBrowserPointerLock;
         private static ExitFromFullscreenBrowser;
+    }
+}
+/** Babylon Toolkit Namespace */
+declare namespace TOOLKIT {
+    /**
+     * Babylon toolkit script component class
+     * @class ScriptComponent - All rights reserved (c) 2024 Mackey Kinard
+     */
+    abstract class ScriptComponent {
+        private _update;
+        private _late;
+        private _step;
+        private _fixed;
+        private _after;
+        private _ready;
+        private _lateUpdate;
+        private _properties;
+        private _awoken;
+        private _started;
+        private _scene;
+        private _delyed;
+        private _transform;
+        private _scriptReady;
+        private _registeredClassname;
+        private _registerComponentAlias;
+        private _lateUpdateObserver;
+        resetScriptComponent: () => void;
+        /** Gets the script component ready state */
+        isReady(): boolean;
+        /** Gets the current scene object */
+        get scene(): BABYLON.Scene;
+        /** Gets the transform node entity */
+        get transform(): BABYLON.TransformNode;
+        constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties?: any, alias?: string);
+        /** Destroys the script component instance */
+        dispose(): void;
+        /** Gets the script component class name */
+        getClassName(): string;
+        /** Sets the script component property bag value */
+        protected setProperty(name: string, propertyValue: any): void;
+        /** Gets the script component property bag value */
+        protected getProperty<T>(name: string, defaultValue?: T): T;
+        /** Get the current time in seconds */
+        getTime(): number;
+        /** Get the current time in milliseconds */
+        getTimeMs(): number;
+        /** Get the total game time in seconds */
+        getGameTime(): number;
+        /** Get the total game time in milliseconds */
+        getGameTimeMs(): number;
+        /** Get the current delta time in seconds */
+        getDeltaTime(): number;
+        /** Get the current delta time in seconds */
+        getDeltaSeconds(): number;
+        /** Get the current delta time in milliseconds */
+        getDeltaMilliseconds(): number;
+        /** Get the delta time animation ratio for 60 fps */
+        getAnimationRatio(): number;
+        /** Is a safe transform skinned mesh entity */
+        hasSkinnedMesh(): boolean;
+        /** Gets the safe transform skinned mesh entity */
+        getSkinnedMesh(): BABYLON.AbstractMesh;
+        /** Gets the safe transform mesh entity */
+        getTransformMesh(): BABYLON.Mesh;
+        /** Gets the safe transform abstract mesh entity */
+        getAbstractMesh(): BABYLON.AbstractMesh;
+        /** Gets the safe transform instanced mesh entity */
+        getInstancedMesh(): BABYLON.InstancedMesh;
+        /** Gets the transform primitive meshes */
+        getPrimitiveMeshes(): BABYLON.AbstractMesh[];
+        /** Get the transform object metedata in the scene. */
+        getMetadata(): any;
+        /** Get a script component on the transform with the specfied class name. */
+        getComponent<T extends TOOLKIT.ScriptComponent>(klass: string, recursive?: boolean): T;
+        /** Get all script components on the transform with the specfied class name. */
+        getComponents<T extends TOOLKIT.ScriptComponent>(klass: string, recursive?: boolean): T[];
+        /** Gets the attached transform light rig */
+        getLightRig(): BABYLON.Light;
+        /** Gets the attached transform camera rig */
+        getCameraRig(): BABYLON.FreeCamera;
+        /** Gets a script component transform primary tag name. */
+        getTransformTag(): string;
+        /** Check if the transform has the specified query tag match */
+        hasTransformTags(query: string): boolean;
+        /** Get the specfied child transform in the scene. */
+        getChildNode(name: string, searchType?: TOOLKIT.SearchType, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode;
+        /** Get the first child transform with matching tags. */
+        getChildWithTags(query: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode;
+        /** Get all child transforms with matching tags. */
+        getChildrenWithTags(query: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode[];
+        /** Get the first child transform with the specified script component. */
+        getChildWithScript(klass: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode;
+        /** Get all child transforms with the specified script component. */
+        getChildrenWithScript(klass: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode[];
+        private _bodyCollisionObserver;
+        private _bodyCollisionEndedObserver;
+        private _worldTriggerEventObserver;
+        /** Enable physics collision events on the body */
+        enableCollisionEvents(): void;
+        /** Disable physics collision events on the body */
+        disableCollisionEvents(): void;
+        /** Observable handler that is triggered when a collision contact has entered */
+        onCollisionEnterObservable: BABYLON.Observable<BABYLON.TransformNode>;
+        /** Observable handler that is triggered when a collision contact is active */
+        onCollisionStayObservable: BABYLON.Observable<BABYLON.TransformNode>;
+        /** Observable handler that is triggered when a collision contact has exited */
+        onCollisionExitObservable: BABYLON.Observable<BABYLON.TransformNode>;
+        /** Observable handler that is triggered when a pass thru collision contact has entered */
+        onTriggerEnterObservable: BABYLON.Observable<BABYLON.TransformNode>;
+        /** Observable handler that is triggered when a pass thru collision contact has exited */
+        onTriggerExitObservable: BABYLON.Observable<BABYLON.TransformNode>;
+        /** Manually set the physics transform position */
+        setTransformPosition(position: BABYLON.Vector3): void;
+        /** Manually set the physics transform rotation */
+        setTransformRotation(rotation: BABYLON.Quaternion): void;
+        /** Registers an on pick trigger click action */
+        registerOnClickAction(func: () => void): BABYLON.IAction;
+        /** Unregisters an on pick tricgger click action */
+        unregisterOnClickAction(action: BABYLON.IAction): boolean;
+        private registerComponentInstance;
+        private delayComponentInstance;
+        private destroyComponentInstance;
+        private setupStepComponentInstance;
+        private removeStepComponentInstance;
+        private setupFixedComponentInstance;
+        private removeFixedComponentInstance;
+        private static RegisterInstance;
+        private static UpdateInstance;
+        private static LateInstance;
+        private static AfterInstance;
+        private static StepInstance;
+        private static FixedInstance;
+        private static ReadyInstance;
+        private static ResetInstance;
+        private static DestroyInstance;
+        private static ParseAutoProperties;
+        private static UnpackObjectProperty;
+    }
+}
+/** Babylon Toolkit Namespace */
+declare namespace TOOLKIT {
+    /**
+     * Babylon toolkit system class
+     * @class System - All rights reserved (c) 2024 Mackey Kinard
+     */
+    enum System {
+        Deg2Rad,
+        Rad2Deg,
+        Epsilon = 0.000001,
+        SingleEpsilon = 1.401298e-45,
+        EpsilonNormalSqrt = 1e-15,
+        Kph2Mph = 0.621371,
+        Mph2Kph = 1.60934,
+        Mps2Kph = 3.6,
+        Mps2Mph = 2.23694,
+        Meter2Inch = 39.3701,
+        Inch2Meter = 0.0254,
+        Gravity = 9.81,
+        Gravity3G = 29.400000000000002,
+        SkidFactor = 0.25,
+        MaxInteger = 2147483647,
+        WalkingVelocity = 4.4,// 4 km/h -> 1.1 m/s
+        TerminalVelocity = 55,
+        SmoothDeltaFactor = 0.2,
+        ToLinearSpace = 2.2,
+        ToGammaSpace = 0.45454545454545453
+    }
+    enum Handedness {
+        Default = -1,
+        Right = 0,
+        Left = 1
+    }
+    enum SearchType {
+        ExactMatch = 0,
+        StartsWith = 1,
+        EndsWith = 2,
+        IndexOf = 3
+    }
+    enum PlayerNumber {
+        Auto = 0,
+        One = 1,
+        Two = 2,
+        Three = 3,
+        Four = 4
+    }
+    enum PlayerControl {
+        FirstPerson = 0,
+        ThirdPerson = 1
+    }
+    enum RenderQuality {
+        High = 0,
+        Medium = 1,
+        Low = 2
+    }
+    enum GamepadType {
+        None = -1,
+        Generic = 0,
+        Xbox360 = 1,
+        DualShock = 2,
+        PoseController = 3
+    }
+    enum Xbox360Trigger {
+        Left = 0,
+        Right = 1
+    }
+    enum MovementType {
+        DirectVelocity = 0,
+        AppliedForces = 1
+    }
+    enum CollisionContact {
+        Top = 0,
+        Left = 1,
+        Right = 2,
+        Bottom = 3
+    }
+    enum IntersectionPrecision {
+        AABB = 0,
+        OBB = 1
+    }
+    enum CollisionFilters {
+        DefaultFilter = 1,
+        StaticFilter = 2,
+        KinematicFilter = 4,
+        DebrisFilter = 8,
+        SensorTrigger = 16,
+        CharacterFilter = 32,
+        AllFilter = -1
+    }
+    enum CollisionState {
+        ACTIVE_TAG = 1,
+        ISLAND_SLEEPING = 2,
+        WANTS_DEACTIVATION = 3,
+        DISABLE_DEACTIVATION = 4,
+        DISABLE_SIMULATION = 5
+    }
+    enum CollisionFlags {
+        CF_STATIC_OBJECT = 1,
+        CF_KINEMATIC_OBJECT = 2,
+        CF_NO_CONTACT_RESPONSE = 4,
+        CF_CUSTOM_MATERIAL_CALLBACK = 8,
+        CF_CHARACTER_OBJECT = 16,
+        CF_DISABLE_VISUALIZE_OBJECT = 32,
+        CF_DISABLE_SPU_COLLISION_PROCESSING = 64,
+        CF_HAS_CONTACT_STIFFNESS_DAMPING = 128,
+        CF_HAS_CUSTOM_DEBUG_RENDERING_COLOR = 256,
+        CF_HAS_FRICTION_ANCHOR = 512,
+        CF_HAS_COLLISION_SOUND_TRIGGER = 1024
+    }
+    enum UserInputPointer {
+        Left = 0,
+        Middle = 1,
+        Right = 2
+    }
+    enum UserInputAxis {
+        Horizontal = 0,
+        Vertical = 1,
+        ClientX = 2,
+        ClientY = 3,
+        MouseX = 4,
+        MouseY = 5,
+        Wheel = 6
+    }
+    enum UserInputKey {
+        BackSpace = 8,
+        Tab = 9,
+        Enter = 13,
+        Shift = 16,
+        Ctrl = 17,
+        Alt = 18,
+        Pause = 19,
+        Break = 19,
+        CapsLock = 20,
+        Escape = 27,
+        SpaceBar = 32,
+        PageUp = 33,
+        PageDown = 34,
+        End = 35,
+        Home = 36,
+        LeftArrow = 37,
+        UpArrow = 38,
+        RightArrow = 39,
+        DownArrow = 40,
+        Insert = 45,
+        Delete = 46,
+        Num0 = 48,
+        Num1 = 49,
+        Num2 = 50,
+        Num3 = 51,
+        Num4 = 52,
+        Num5 = 53,
+        Num6 = 54,
+        Num7 = 55,
+        Num8 = 56,
+        Num9 = 57,
+        A = 65,
+        B = 66,
+        C = 67,
+        D = 68,
+        E = 69,
+        F = 70,
+        G = 71,
+        H = 72,
+        I = 73,
+        J = 74,
+        K = 75,
+        L = 76,
+        M = 77,
+        N = 78,
+        O = 79,
+        P = 80,
+        Q = 81,
+        R = 82,
+        S = 83,
+        T = 84,
+        U = 85,
+        V = 86,
+        W = 87,
+        X = 88,
+        Y = 89,
+        Z = 90,
+        LeftWindowKey = 91,
+        RightWindowKey = 92,
+        SelectKey = 93,
+        Numpad0 = 96,
+        Numpad1 = 97,
+        Numpad2 = 98,
+        Numpad3 = 99,
+        Numpad4 = 100,
+        Numpad5 = 101,
+        Numpad6 = 102,
+        Numpad7 = 103,
+        Numpad8 = 104,
+        Numpad9 = 105,
+        Multiply = 106,
+        Add = 107,
+        Subtract = 109,
+        DecimalPoint = 110,
+        Divide = 111,
+        F1 = 112,
+        F2 = 113,
+        F3 = 114,
+        F4 = 115,
+        F5 = 116,
+        F6 = 117,
+        F7 = 118,
+        F8 = 119,
+        F9 = 120,
+        F10 = 121,
+        F11 = 122,
+        F12 = 123,
+        NumLock = 144,
+        ScrollLock = 145,
+        SemiColon = 186,
+        EqualSign = 187,
+        Comma = 188,
+        Dash = 189,
+        Period = 190,
+        ForwardSlash = 191,
+        GraveAccent = 192,
+        OpenBracket = 219,
+        BackSlash = 220,
+        CloseBraket = 221,
+        SingleQuote = 222
+    }
+    interface UserInputPress {
+        index: number;
+        action: () => void;
+    }
+    type UserInputAction = (index: number) => void;
+    class UserInputOptions {
+        static KeyboardSmoothing: boolean;
+        static KeyboardMoveSensibility: number;
+        static KeyboardArrowSensibility: number;
+        static KeyboardMoveDeadZone: number;
+        static GamepadDeadStickValue: number;
+        static GamepadLStickXInverted: boolean;
+        static GamepadLStickYInverted: boolean;
+        static GamepadRStickXInverted: boolean;
+        static GamepadRStickYInverted: boolean;
+        static GamepadLStickSensibility: number;
+        static GamepadRStickSensibility: number;
+        static SupportedInputDevices: any[];
+        static BabylonAngularSensibility: number;
+        static DefaultAngularSensibility: number;
+        static PointerWheelDeadZone: number;
+        static PointerMouseDeadZone: number;
+        static PointerMouseInverted: boolean;
+        static UseCanvasElement: boolean;
+        static UseArrowKeyRotation: boolean;
+        static EnableBabylonRotation: boolean;
+    }
+    /**
+     * Babylon toolkit playground initialization options
+     * @param initSceneFileLoaders initialize scne file loaders. Default true.
+     * @param loadProjectScriptBundle load a project script bundle. Default false.
+     * @param projectScriptBundleUrl specified project script bundle. Default bundle.
+     * @param showDefaultLoadingScreen show the default loading screen. Default false.
+     * @param hideLoadingUIWithEngine hide the loading screen with engine.hideLoadingUI. When set to false, you must manually hide the loading screen using TOOLKIT.SceneManager.HideLoadingScreen when the scene is ready. Default true.
+     * @param defaultLoadingUIMarginTop The top margin of the loading text. Default 150px.
+     */
+    interface IPlaygroundOptions {
+        initSceneFileLoaders?: boolean;
+        loadProjectScriptBundle?: boolean;
+        projectScriptBundleUrl?: string;
+        showDefaultLoadingScreen?: boolean;
+        hideLoadingUIWithEngine?: boolean;
+        defaultLoadingUIMarginTop?: string;
+    }
+    /**
+     * Asset Preloader Interface (https://doc.babylonjs.com/divingDeeper/importers/assetManager)
+     */
+    interface IAssetPreloader {
+        addPreloaderTasks(assetsManager: TOOLKIT.PreloadAssetsManager): void;
+    }
+    /**
+     * Window Message Interface
+     */
+    interface IWindowMessage {
+        source: string;
+        command: string;
+        [key: string]: any;
+    }
+    /**
+     * Unity Export Interfaces
+     */
+    interface IUnityTransform {
+        type: string;
+        id: string;
+        tag: string;
+        name: string;
+        layer: number;
+    }
+    interface IUnityCurve {
+        type: string;
+        length: number;
+        prewrapmode: string;
+        postwrapmode: string;
+        animation: any;
+    }
+    interface IUnityMaterial {
+        type: string;
+        id: string;
+        name: string;
+        shader: string;
+        gltf: number;
+    }
+    interface IUnityTexture {
+        type: string;
+        name: string;
+        width: number;
+        height: number;
+        filename: string;
+        wrapmode: string;
+        filtermode: string;
+        anisolevel: number;
+    }
+    interface IUnityCubemap {
+        type: string;
+        name: string;
+        info: any;
+        width: number;
+        height: number;
+        filename: string;
+        extension: string;
+        wrapmode: string;
+        filtermode: string;
+        anisolevel: number;
+        texelsizex: number;
+        texelsizey: number;
+        dimension: number;
+        format: number;
+        mipmapbias: number;
+        mipmapcount: number;
+    }
+    interface IUnityAudioClip {
+        type: string;
+        name: string;
+        filename: string;
+        length: number;
+        channels: number;
+        frequency: number;
+        samples: number;
+    }
+    interface IUnityVideoClip {
+        type: string;
+        name: string;
+        filename: string;
+        length: number;
+        width: number;
+        height: number;
+        framerate: number;
+        framecount: number;
+        audiotracks: number;
+    }
+    interface IUnityFontAsset {
+        type: string;
+        filename: string;
+        format: string;
+    }
+    interface IUnityTextAsset {
+        type: string;
+        filename: string;
+        base64: string;
+        json: boolean;
+    }
+    interface IUnityDefaultAsset {
+        type: string;
+        filename: string;
+        base64: string;
+        json: boolean;
+    }
+    interface IUnityVector2 {
+        x: number;
+        y: number;
+    }
+    interface IUnityVector3 {
+        x: number;
+        y: number;
+        z: number;
+    }
+    interface IUnityVector4 {
+        x: number;
+        y: number;
+        z: number;
+        w: number;
+    }
+    interface IUnityColor {
+        r: number;
+        g: number;
+        b: number;
+        a: number;
+    }
+    /**
+     * Http Request Header
+     * @class RequestHeader - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class RequestHeader {
+        name: string;
+        value: string;
+    }
+    /**
+     * Trigger Volume State
+     * @class TriggerVolume - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class TriggerVolume {
+        mesh: BABYLON.AbstractMesh;
+        state: number;
+    }
+    /**
+     * Room Error Message
+     * @class RoomErrorMessage - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class RoomErrorMessage {
+        code: number;
+        message: string;
+    }
+    /**
+     * Custom Loading Screen
+     * @class CustomLoadingScreen - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class CustomLoadingScreen implements BABYLON.ILoadingScreen {
+        loadingDivId: string;
+        loadingUIText: string;
+        hideLoadingUIWithEngine: boolean;
+        customInnerHtml: string;
+        customInnerCss: string;
+        loadingUIBackgroundColor: string;
+        constructor(loadingDivId: string, loadingUIText: string, hideLoadingUIWithEngine?: boolean, customInnerHtml?: string, customInnerCss?: string);
+        displayLoadingUI(): void;
+        hideLoadingUI(): void;
+        showLoadingDiv(show: boolean): void;
+        getLoadingDiv(): HTMLDivElement;
+        hasLoadingDiv(): boolean;
+    }
+    /**
+     * Local Message Bus (Safe Local Instance Communication)
+     * @class LocalMessageBus - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class LocalMessageBus {
+        /** Handle event bus message
+         * @param message The message to handle
+         * @param data The data to handle
+         * @returns void
+         */
+        OnMessage<T>(messageName: string, handler: (data: T) => void): void;
+        /** Post event bus message
+         * @param message The message to post
+         * @param data The data to post
+         * @returns void
+         */
+        PostMessage(messageName: string, data?: any): void;
+        /** Remove event bus message handler
+         * @param message The message to remove
+         * @param handler The handler to remove
+         * @returns void
+         */
+        RemoveHandler(messageName: string, handler: (data: any) => void): void;
+        /** Clear and reset all event bus message handlers
+         * @returns void
+         */
+        ResetHandlers(): void;
+        Dispose(): void;
+        private ListenerDictionary;
+    }
+    /**
+     * Global Message Bus (Safe Post Window Message Communication)
+     * @class GlobalMessageBus - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class GlobalMessageBus {
+        constructor();
+        /** Handle event bus message
+         * @param message The message to handle
+         * @param data The data to handle
+         * @returns void
+         */
+        OnMessage<T>(message: string, handler: (data: T) => void): void;
+        /** Post event bus message
+         * @param message The message to post
+         * @param data The data to post
+         * @param target The target to post
+         * @param transfer The transfer to post
+         * @returns void
+         */
+        PostMessage(message: string, data?: any, target?: string, transfer?: Transferable[] | undefined): void;
+        /** Remove event bus message handler
+         * @param message The message to remove
+         * @param handler The handler to remove
+         * @returns void
+         */
+        RemoveHandler(message: string, handler: (data: any) => void): void;
+        /** Clear and reset all event bus message handlers
+         * @returns void
+         */
+        ResetHandlers(): void;
+        /** Dispose the global message bus
+         * @returns void
+         */
+        Dispose(): void;
+        /** Handle window message event
+         * @param event The message event to handle
+         * @returns void
+         */
+        private HandleWindowMessage;
+        /** Dispatch internal event bus message
+         * @param message The message to dispatch
+         * @param data The data to dispatch
+         * @returns void
+         */
+        private OnDispatchMessage;
+        private ListenerDictionary;
+    }
+    /**
+     * Prefab Object Pool
+     * @class PrefabObjectPool - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class PrefabObjectPool {
+        private prefabName;
+        private allowGrowth;
+        private assetContainer;
+        private cloneAnimations;
+        private makeNewMaterials;
+        private availableInstances;
+        getAvailableCount(): number;
+        constructor(container: BABYLON.AssetContainer | BABYLON.Scene, prefabName: string, prefabCount?: number, allowGrowth?: boolean, makeNewMaterials?: boolean, cloneAnimations?: boolean);
+        /** Populate the prefab object pool by the specified count */
+        populatePool(count: number): void;
+        /** Get a prefab instance from the object pool or create a new one if none available */
+        getInstance(position?: BABYLON.Vector3, rotation?: BABYLON.Quaternion): BABYLON.TransformNode;
+        /** Free the prefab instance and reset the available object pool state */
+        freeInstance(instance: BABYLON.TransformNode): void;
+        private appendNewInstance;
+        private createNewInstance;
+    }
+    /**
+     * Physics Raycast Classes
+     * @class RaycastHitResult - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class RaycastHitResult {
+        private _hit;
+        private _dest;
+        private _origin;
+        private _hitPoint;
+        private _hitNormal;
+        private _hitDistance;
+        private _collisionObject;
+        get hasHit(): boolean;
+        get hitPoint(): BABYLON.Vector3;
+        get hitNormal(): BABYLON.Vector3;
+        get hitDistance(): number;
+        get collisionObject(): any;
+        get rayDestination(): BABYLON.Vector3;
+        get rayOrigin(): BABYLON.Vector3;
+        constructor();
+        reset(origin: BABYLON.Vector3, destination: BABYLON.Vector3): void;
+        update(hit: boolean, pointX: number, pointY: number, pointZ: number, normalX: number, normalY: number, normalZ: number, collisionObject?: any): void;
+    }
+    /**
+     * Lines Mesh Render Classes
+     * @class LinesMeshRenderer - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class LinesMeshRenderer {
+        private _numPoints;
+        private _pointMesh;
+        private _pointSize;
+        private _pointType;
+        private _linesName;
+        private _linesMesh;
+        private _babylonScene;
+        get pointMesh(): BABYLON.Mesh;
+        get linesMesh(): BABYLON.LinesMesh;
+        constructor(name: string, scene: BABYLON.Scene, pointType?: number, pointSize?: number);
+        dispose(doNotRecurse?: boolean): void;
+        hidePoint(hide?: boolean): void;
+        drawPoint(position: BABYLON.Vector3): void;
+        drawLine(points: BABYLON.Vector3[], color?: BABYLON.Color3): void;
+    }
+    /**
+     * Preload Assets Manager Classes (Note: No Progress Events For Textures)
+     * @class PreloadAssetsManager - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class PreloadAssetsManager extends BABYLON.AssetsManager {
+        /**
+         * Add a ContainerAssetTask to the list of active tasks
+         * Note: Progress Tracking Supported
+         * @param taskName defines the name of the new task
+         * @param meshesNames defines the name of meshes to load
+         * @param rootUrl defines the root url to use to locate files
+         * @param sceneFilename defines the filename of the scene file
+         * @returns a new ContainerAssetTask object
+         */
+        addContainerTask(taskName: string, meshesNames: any, rootUrl: string, sceneFilename: string): BABYLON.ContainerAssetTask;
+        /**
+         * Add a MeshAssetTask to the list of active tasks
+         * Note: Progress Tracking Supported
+         * @param taskName defines the name of the new task
+         * @param meshesNames defines the name of meshes to load
+         * @param rootUrl defines the root url to use to locate files
+         * @param sceneFilename defines the filename of the scene file
+         * @returns a new MeshAssetTask object
+         */
+        addMeshTask(taskName: string, meshesNames: any, rootUrl: string, sceneFilename: string): BABYLON.MeshAssetTask;
+        /**
+         * Add a TextFileAssetTask to the list of active tasks
+         * Note: Progress Tracking Supported
+         * @param taskName defines the name of the new task
+         * @param url defines the url of the file to load
+         * @returns a new TextFileAssetTask object
+         */
+        addTextFileTask(taskName: string, url: string): BABYLON.TextFileAssetTask;
+        /**
+         * Add a BinaryFileAssetTask to the list of active tasks
+         * Note: Progress Tracking Supported
+         * @param taskName defines the name of the new task
+         * @param url defines the url of the file to load
+         * @returns a new BinaryFileAssetTask object
+         */
+        addBinaryFileTask(taskName: string, url: string): BABYLON.BinaryFileAssetTask;
+        /**
+         * Add a ImageAssetTask to the list of active tasks
+         * Note: Progress Tracking Supported
+         * @param taskName defines the name of the new task
+         * @param url defines the url of the file to load
+         * @returns a new ImageAssetTask object
+         */
+        addImageTask(taskName: string, url: string): BABYLON.ImageAssetTask;
+        /**
+         * Handle Preloading Progress Events
+         */
+        private handlePreloadingProgress;
+    }
+    /**
+     * Babylon network entity controller (Colyseus Universal Game Room)
+     * @class EntityController - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class EntityController {
+        /** Validates a network entity on the transform node. */
+        static HasNetworkEntity(transform: BABYLON.TransformNode): boolean;
+        /** Gets the network entity id on the transform node. */
+        static GetNetworkEntityId(transform: BABYLON.TransformNode): string;
+        /** Gets the network entity type on the transform node. */
+        static GetNetworkEntityType(transform: BABYLON.TransformNode): number;
+        /** Gets the network entity owner session id on the transform node. */
+        static GetNetworkEntitySessionId(transform: BABYLON.TransformNode): string;
+        /** Queries the syncronized network entity attribute on the transform node. */
+        static QueryNetworkAttribute(transform: BABYLON.TransformNode, key: string): string;
+        /** Queries the buffered network entity attribute on the transform node. */
+        static QueryBufferedAttribute(transform: BABYLON.TransformNode, index: number): number;
+        /** Post the buffered network entity attribute on the transform node update batch. (Local Entities Only) */
+        static PostBufferedAttribute(transform: BABYLON.TransformNode, index: number, value: number): void;
+    }
+}
+declare namespace TOOLKIT {
+    /**
+     * Babylon Toolkit Unity Editor - Loader Class
+     * @class CVTOOLS_unity_metadata - All rights reserved (c) 2024 Mackey Kinard
+     * [Specification](https://github.com/MackeyK24/glTF/tree/master/extensions/2.0/Vendor/CVTOOLS_unity_metadata)
+     */
+    enum MaterialAlphaMode {
+        /**
+         * The alpha value is ignored and the rendered output is fully opaque
+         */
+        OPAQUE = "OPAQUE",
+        /**
+         * The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value
+         */
+        MASK = "MASK",
+        /**
+         * The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator)
+         */
+        BLEND = "BLEND"
+    }
+    class CubeTextureLoader {
+        name: string;
+        mapkey: string;
+        material: BABYLON.Material;
+        extension: string;
+        prefiltered: boolean;
+        boundingBoxSize: BABYLON.Vector3;
+        boundingBoxPosition: BABYLON.Vector3;
+    }
+    class CVTOOLS_unity_metadata implements BABYLON.GLTF2.IGLTFLoaderExtension {
+        /** The name of this extension. */
+        readonly name: string;
+        /** Defines whether this extension is enabled. */
+        enabled: boolean;
+        private _webgpu;
+        private _loader;
+        private _babylonScene;
+        private _metadataParser;
+        private _loaderScene;
+        private _assetsManager;
+        private _parserList;
+        private _masterList;
+        private _detailList;
+        private _shaderList;
+        private _readyList;
+        private _preloadList;
+        private _animationGroups;
+        private _materialMap;
+        private _lightmapMap;
+        private _reflectionMap;
+        private _reflectionCache;
+        private _assetContainer;
+        private _activeMeshes;
+        private _parseScene;
+        private _leftHanded;
+        private _disposeRoot;
+        private _sceneParsed;
+        private _preWarmTime;
+        private _hideLoader;
+        private _rootUrl;
+        private _fileName;
+        private _licenseName;
+        private _licenseType;
+        private static ScriptBundleCache;
+        /** @hidden */
+        constructor(loader: BABYLON.GLTF2.GLTFLoader);
+        /** @hidden */
+        dispose(): void;
+        /** @hidden */
+        onLoading(): void;
+        /** @hidden */
+        onReady(): void;
+        /** @hidden */
+        onComplete(): void;
+        getScriptBundleTag(): string;
+        getScriptBundleUrl(): string;
+        finishComplete(): void;
+        /** @hidden */
+        onValidate(): void;
+        /** @hidden */
+        onCleanup(): void;
+        /** @hidden */
+        setupLoader(): void;
+        /** @hidden */
+        startParsing(): void;
+        /** @hidden */
+        loadSceneAsync(context: string, scene: BABYLON.GLTF2.Loader.IScene): BABYLON.Nullable<Promise<void>>;
+        private loadSceneExAsync;
+        private _processActiveMeshes;
+        private _processUnityMeshes;
+        private _processPreloadTimeout;
+        /** @hidden */
+        loadNodeAsync(context: string, node: BABYLON.GLTF2.Loader.INode, assign: (babylonMesh: BABYLON.TransformNode) => void): BABYLON.Nullable<Promise<BABYLON.TransformNode>>;
+        /** @hidden */
+        loadMaterialPropertiesAsync(context: string, material: BABYLON.GLTF2.IMaterial, babylonMaterial: BABYLON.Material): BABYLON.Nullable<Promise<void>>;
+        private _getCachedMaterialByIndex;
+        private _getCachedLightmapByIndex;
+        /** @hidden */
+        createMaterial(context: string, material: BABYLON.GLTF2.IMaterial, babylonDrawMode: number): BABYLON.Nullable<BABYLON.Material>;
+        /**
+         * Loads a glTF animation.
+         * @param context The context when loading the asset
+         * @param animation The glTF animation property
+         * @returns A promise that resolves with the loaded Babylon animation group when the load is complete
+         */
+        loadAnimationAsync(context: string, animation: BABYLON.GLTF2.Loader.IAnimation): Promise<BABYLON.AnimationGroup>;
+        /**
+         * Loads a glTF animation.
+         * @param context The context when loading the asset
+         * @param animation The glTF animation property
+         * @returns A promise that resolves with the loaded Babylon animation group when the load is complete
+         */
+        /**
+         * @hidden Define this method to modify the default behavior when loading data for mesh primitives.
+         * @param context The context when loading the asset
+         * @param name The mesh name when loading the asset
+         * @param node The glTF node when loading the asset
+         * @param mesh The glTF mesh when loading the asset
+         * @param primitive The glTF mesh primitive property
+         * @param assign A function called synchronously after parsing the glTF properties
+         * @returns A promise that resolves with the loaded mesh when the load is complete or null if not handled
+         */
+        _loadMeshPrimitiveAsync(context: string, name: string, node: BABYLON.GLTF2.INode, mesh: BABYLON.GLTF2.IMesh, primitive: any, assign: (babylonMesh: BABYLON.AbstractMesh) => void): Promise<BABYLON.AbstractMesh>;
+        private _setupBabylonMesh;
+        private _setupBabylonMaterials;
+        private _processLevelOfDetail;
+        private _processShaderMaterials;
+        private preProcessSceneProperties;
+        private postProcessSceneProperties;
+        private _preloadRawMaterialsAsync;
+        private _parseMultiMaterialAsync;
+        private _parseNodeMaterialPropertiesAsync;
+        private _parseShaderMaterialPropertiesAsync;
+        private _parseDiffuseMaterialPropertiesAsync;
+        private _parseCommonConstantProperties;
+    }
+    /**
+     * Babylon Toolkit Editor - Loader Class
+     * @class CVTOOLS_babylon_mesh - All rights reserved (c) 2024 Mackey Kinard
+     * [Specification](https://github.com/MackeyK24/glTF/tree/master/extensions/2.0/Vendor/CVTOOLS_unity_metadata)
+     */
+    class CVTOOLS_babylon_mesh implements BABYLON.GLTF2.IGLTFLoaderExtension {
+        /** The name of this extension. */
+        readonly name: string;
+        /** Defines whether this extension is enabled. */
+        enabled: boolean;
+        private _loader;
+        /** @hidden */
+        constructor(loader: BABYLON.GLTF2.GLTFLoader);
+        /** @hidden */
+        dispose(): void;
+    }
+    /**
+     * Babylon Toolkit Editor - Loader Class
+     * @class CVTOOLS_left_handed - All rights reserved (c) 2024 Mackey Kinard
+     * [Specification](https://github.com/MackeyK24/glTF/tree/master/extensions/2.0/Vendor/CVTOOLS_unity_metadata)
+     */
+    class CVTOOLS_left_handed implements BABYLON.GLTF2.IGLTFLoaderExtension {
+        /** The name of this extension. */
+        readonly name: string;
+        /** Defines whether this extension is enabled. */
+        enabled: boolean;
+        private _loader;
+        /** @hidden */
+        constructor(loader: BABYLON.GLTF2.GLTFLoader);
+        /** @hidden */
+        dispose(): void;
+    }
+}
+/** Babylon Toolkit Namespace */
+declare namespace TOOLKIT {
+    /**
+      * GLTF Custom Shader Material (BABYLON.PBRMaterial)
+      * @class CustomShaderMaterial - All rights reserved (c) 2024 Mackey Kinard
+      */
+    class CustomShaderMaterial extends BABYLON.PBRMaterial {
+        universalMaterial: boolean;
+        private _defines;
+        private _uniforms;
+        private _samplers;
+        private _attributes;
+        private _textures;
+        private _vectors4;
+        private _vectors3;
+        private _vectors2;
+        private _floats;
+        private _bools;
+        private _ubos;
+        protected shader: string;
+        protected plugin: BABYLON.MaterialPluginBase;
+        constructor(name: string, scene: BABYLON.Scene);
+        /** Adds a custom attribute property */
+        addAttribute(attributeName: string): void;
+        /** Checks uniform values. Internal Use Only */
+        checkUniform(uniformName: string, type: string, value?: any): void;
+        /** Checks sampler values. Internal Use Only */
+        checkSampler(samplerName: string, texture?: any): void;
+        /** Adds a texture uniform property */
+        addTextureUniform(name: string, texture: BABYLON.Texture): TOOLKIT.CustomShaderMaterial;
+        /** Sets the texture uniform value */
+        setTextureValue(name: string, texture: BABYLON.Texture): TOOLKIT.CustomShaderMaterial;
+        /** Gets the texture uniform value */
+        getTextureValue(name: string): BABYLON.Texture;
+        /** Adds a vector4 uniform property */
+        addVector4Uniform(name: string, value: BABYLON.Vector4): TOOLKIT.CustomShaderMaterial;
+        /** Sets the vector4 uniform value */
+        setVector4Value(name: string, value: BABYLON.Vector4): TOOLKIT.CustomShaderMaterial;
+        /** Gets the vector4 uniform value */
+        getVector4Value(name: string): BABYLON.Vector4;
+        /** Adds a vector3 uniform property */
+        addVector3Uniform(name: string, value: BABYLON.Vector3): TOOLKIT.CustomShaderMaterial;
+        /** Sets the vector3 uniform value */
+        setVector3Value(name: string, value: BABYLON.Vector3): TOOLKIT.CustomShaderMaterial;
+        /** Gets the vector3 uniform value */
+        getVector3Value(name: string): BABYLON.Vector3;
+        /** Adds a vector2 uniform property */
+        addVector2Uniform(name: string, value: BABYLON.Vector2): TOOLKIT.CustomShaderMaterial;
+        /** Sets the vector2 uniform value */
+        setVector2Value(name: string, value: BABYLON.Vector2): TOOLKIT.CustomShaderMaterial;
+        /** Gets the vector2 uniform value */
+        getVector2Value(name: string): BABYLON.Vector2;
+        /** Adds a float uniform property */
+        addFloatUniform(name: string, value: number): TOOLKIT.CustomShaderMaterial;
+        /** Sets the float uniform value */
+        setFloatValue(name: string, value: number): TOOLKIT.CustomShaderMaterial;
+        /** Gets the float uniform value */
+        getFloatValue(name: string): number;
+        /** Adds a boolean uniform property */
+        addBoolUniform(name: string, value: boolean): TOOLKIT.CustomShaderMaterial;
+        /** Sets the boolean uniform value */
+        setBoolValue(name: string, value: boolean): TOOLKIT.CustomShaderMaterial;
+        /** Gets the boolean uniform value */
+        getBoolValue(name: string): boolean;
+        /** Gets the animatables */
+        getAnimatables(): BABYLON.IAnimatable[];
+        /** Gets the active textures */
+        getActiveTextures(): BABYLON.BaseTexture[];
+        /** Has the specified texture */
+        hasTexture(texture: BABYLON.BaseTexture): boolean;
+        /** Gets this custom material uniforms */
+        getCustomUniforms(wgsl: boolean): TOOLKIT.CustomUniformProperty[];
+        /** Gets this custom material uniforms */
+        getCustomSamplers(): string[];
+        /** Gets this custom material attributes */
+        getCustomAttributes(): string[];
+        /** Gets this custom material vertex source */
+        getCustomVertexCode(wgsl: boolean): string;
+        /** Gets this custom material fragment source */
+        getCustomFragmentCode(wgsl: boolean): string;
+        /** Prepares the custom material defines */
+        prepareCustomDefines(defines: BABYLON.MaterialDefines): void;
+        /** Update custom material bindings */
+        updateCustomBindings(effect: BABYLON.UniformBuffer): void;
+        /** Builds a custom uniform property */
+        protected buildUniformProperty(uniformName: string, uniformType: string, uniformValue: any): void;
+    }
+    /**
+      * GLTF Custom Shader Material Plugin (BABYLON.MaterialPluginBase)
+      * @class CustomShaderMaterialPlugin - All rights reserved (c) 2024 Mackey Kinard
+      */
+    class CustomShaderMaterialPlugin extends BABYLON.MaterialPluginBase {
+        private _isEnabled;
+        /**
+         * Creates a new material plugin
+         * @param material parent material of the plugin
+         * @param name name of the plugin
+         * @param priority priority of the plugin
+         * @param defines list of defines used by the plugin. The value of the property is the default value for this property
+         * @param addToPluginList true to add the plugin to the list of plugins managed by the material plugin manager of the material (default: true)
+         * @param enable true to enable the plugin (it is handy if the plugin does not handle properties to switch its current activation)
+         * @param resolveIncludes Indicates that any #include directive in the plugin code must be replaced by the corresponding code (default: false)
+         */
+        constructor(material: BABYLON.Material, name: string, priority: number, defines?: {}, addToPluginList?: boolean, enable?: boolean, resolveIncludes?: boolean);
+        get isEnabled(): boolean;
+        set isEnabled(enabled: boolean);
+        vertexDefinitions: string;
+        fragmentDefinitions: string;
+        /** Gets a reference to the custom shader material */
+        getCustomShaderMaterial(): TOOLKIT.CustomShaderMaterial;
+    }
+    /**
+     * Babylon custom uniform items (GLTF)
+     */
+    type CustomUniformProperty = {
+        name: string;
+        size: number;
+        type: string;
+        arraySize?: number;
+    };
+}
+/** Babylon Toolkit Namespace */
+declare namespace TOOLKIT {
+    /**
+     * Babylon toolkit metadata parser class (Internal use only)
+     * @class MetadataParser - All rights reserved (c) 2024 Mackey Kinard
+     */
+    class MetadataParser {
+        private _physicList;
+        private _shadowList;
+        private _freezeList;
+        private _scriptList;
+        private _babylonScene;
+        constructor(scene: BABYLON.Scene);
+        /** Parse the scene component metadata. Note: Internal use only */
+        parseSceneComponents(entity: BABYLON.TransformNode): void;
+        /** Post process pending scene components. Note: Internal use only */
+        postProcessSceneComponents(preloadList: Array<TOOLKIT.ScriptComponent>, readyList: Array<TOOLKIT.ScriptComponent>): void;
+        private static DoParseSceneComponents;
+        private static DoProcessPendingScripts;
+        private static DoProcessPendingShadows;
+        private static DoProcessPendingPhysics;
+        private static DoProcessPendingFreezes;
+        private static SetupCameraComponent;
+        private static SetupLightComponent;
     }
 }
 declare namespace TOOLKIT {
@@ -896,290 +2010,6 @@ declare namespace TOOLKIT {
         dispose(): void;
     }
 }
-/** Babylon Toolkit Namespace */
-declare namespace TOOLKIT {
-    /**
-     * Babylon toolkit metadata parser class (Internal use only)
-     * @class MetadataParser - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class MetadataParser {
-        private _physicList;
-        private _shadowList;
-        private _freezeList;
-        private _scriptList;
-        private _babylonScene;
-        constructor(scene: BABYLON.Scene);
-        /** Parse the scene component metadata. Note: Internal use only */
-        parseSceneComponents(entity: BABYLON.TransformNode): void;
-        /** Post process pending scene components. Note: Internal use only */
-        postProcessSceneComponents(preloadList: Array<TOOLKIT.ScriptComponent>, readyList: Array<TOOLKIT.ScriptComponent>): void;
-        private static DoParseSceneComponents;
-        private static DoProcessPendingScripts;
-        private static DoProcessPendingShadows;
-        private static DoProcessPendingPhysics;
-        private static DoProcessPendingFreezes;
-        private static SetupCameraComponent;
-        private static SetupLightComponent;
-    }
-}
-/** Babylon Toolkit Namespace */
-declare namespace TOOLKIT {
-    /**
-     * Babylon toolkit script component class
-     * @class ScriptComponent - All rights reserved (c) 2024 Mackey Kinard
-     */
-    abstract class ScriptComponent {
-        private _update;
-        private _late;
-        private _step;
-        private _fixed;
-        private _after;
-        private _ready;
-        private _lateUpdate;
-        private _properties;
-        private _awoken;
-        private _started;
-        private _scene;
-        private _delyed;
-        private _transform;
-        private _scriptReady;
-        private _registeredClassname;
-        private _registerComponentAlias;
-        private _lateUpdateObserver;
-        resetScriptComponent: () => void;
-        /** Gets the script component ready state */
-        isReady(): boolean;
-        /** Gets the current scene object */
-        get scene(): BABYLON.Scene;
-        /** Gets the transform node entity */
-        get transform(): BABYLON.TransformNode;
-        constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties?: any, alias?: string);
-        /** Destroys the script component instance */
-        dispose(): void;
-        /** Gets the script component class name */
-        getClassName(): string;
-        /** Sets the script component property bag value */
-        protected setProperty(name: string, propertyValue: any): void;
-        /** Gets the script component property bag value */
-        protected getProperty<T>(name: string, defaultValue?: T): T;
-        /** Get the current time in seconds */
-        getTime(): number;
-        /** Get the current time in milliseconds */
-        getTimeMs(): number;
-        /** Get the total game time in seconds */
-        getGameTime(): number;
-        /** Get the total game time in milliseconds */
-        getGameTimeMs(): number;
-        /** Get the current delta time in seconds */
-        getDeltaTime(): number;
-        /** Get the current delta time in seconds */
-        getDeltaSeconds(): number;
-        /** Get the current delta time in milliseconds */
-        getDeltaMilliseconds(): number;
-        /** Get the delta time animation ratio for 60 fps */
-        getAnimationRatio(): number;
-        /** Is a safe transform skinned mesh entity */
-        hasSkinnedMesh(): boolean;
-        /** Gets the safe transform skinned mesh entity */
-        getSkinnedMesh(): BABYLON.AbstractMesh;
-        /** Gets the safe transform mesh entity */
-        getTransformMesh(): BABYLON.Mesh;
-        /** Gets the safe transform abstract mesh entity */
-        getAbstractMesh(): BABYLON.AbstractMesh;
-        /** Gets the safe transform instanced mesh entity */
-        getInstancedMesh(): BABYLON.InstancedMesh;
-        /** Gets the transform primitive meshes */
-        getPrimitiveMeshes(): BABYLON.AbstractMesh[];
-        /** Get the transform object metedata in the scene. */
-        getMetadata(): any;
-        /** Get a script component on the transform with the specfied class name. */
-        getComponent<T extends TOOLKIT.ScriptComponent>(klass: string, recursive?: boolean): T;
-        /** Get all script components on the transform with the specfied class name. */
-        getComponents<T extends TOOLKIT.ScriptComponent>(klass: string, recursive?: boolean): T[];
-        /** Gets the attached transform light rig */
-        getLightRig(): BABYLON.Light;
-        /** Gets the attached transform camera rig */
-        getCameraRig(): BABYLON.FreeCamera;
-        /** Gets a script component transform primary tag name. */
-        getTransformTag(): string;
-        /** Check if the transform has the specified query tag match */
-        hasTransformTags(query: string): boolean;
-        /** Get the specfied child transform in the scene. */
-        getChildNode(name: string, searchType?: TOOLKIT.SearchType, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode;
-        /** Get the first child transform with matching tags. */
-        getChildWithTags(query: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode;
-        /** Get all child transforms with matching tags. */
-        getChildrenWithTags(query: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode[];
-        /** Get the first child transform with the specified script component. */
-        getChildWithScript(klass: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode;
-        /** Get all child transforms with the specified script component. */
-        getChildrenWithScript(klass: string, directDecendantsOnly?: boolean, predicate?: (node: BABYLON.Node) => boolean): BABYLON.TransformNode[];
-        private _bodyCollisionObserver;
-        private _bodyCollisionEndedObserver;
-        private _worldTriggerEventObserver;
-        /** Enable physics collision events on the body */
-        enableCollisionEvents(): void;
-        /** Disable physics collision events on the body */
-        disableCollisionEvents(): void;
-        /** Observable handler that is triggered when a collision contact has entered */
-        onCollisionEnterObservable: BABYLON.Observable<BABYLON.TransformNode>;
-        /** Observable handler that is triggered when a collision contact is active */
-        onCollisionStayObservable: BABYLON.Observable<BABYLON.TransformNode>;
-        /** Observable handler that is triggered when a collision contact has exited */
-        onCollisionExitObservable: BABYLON.Observable<BABYLON.TransformNode>;
-        /** Observable handler that is triggered when a pass thru collision contact has entered */
-        onTriggerEnterObservable: BABYLON.Observable<BABYLON.TransformNode>;
-        /** Observable handler that is triggered when a pass thru collision contact has exited */
-        onTriggerExitObservable: BABYLON.Observable<BABYLON.TransformNode>;
-        /** Manually set the physics transform position */
-        setTransformPosition(position: BABYLON.Vector3): void;
-        /** Manually set the physics transform rotation */
-        setTransformRotation(rotation: BABYLON.Quaternion): void;
-        /** Registers an on pick trigger click action */
-        registerOnClickAction(func: () => void): BABYLON.IAction;
-        /** Unregisters an on pick tricgger click action */
-        unregisterOnClickAction(action: BABYLON.IAction): boolean;
-        private registerComponentInstance;
-        private delayComponentInstance;
-        private destroyComponentInstance;
-        private setupStepComponentInstance;
-        private removeStepComponentInstance;
-        private setupFixedComponentInstance;
-        private removeFixedComponentInstance;
-        private static RegisterInstance;
-        private static UpdateInstance;
-        private static LateInstance;
-        private static AfterInstance;
-        private static StepInstance;
-        private static FixedInstance;
-        private static ReadyInstance;
-        private static ResetInstance;
-        private static DestroyInstance;
-        private static ParseAutoProperties;
-        private static UnpackObjectProperty;
-    }
-}
-/** Babylon Toolkit Namespace */
-declare namespace TOOLKIT {
-    /**
-      * GLTF Custom Shader Material (BABYLON.PBRMaterial)
-      * @class CustomShaderMaterial - All rights reserved (c) 2024 Mackey Kinard
-      */
-    class CustomShaderMaterial extends BABYLON.PBRMaterial {
-        universalMaterial: boolean;
-        private _defines;
-        private _uniforms;
-        private _samplers;
-        private _attributes;
-        private _textures;
-        private _vectors4;
-        private _vectors3;
-        private _vectors2;
-        private _floats;
-        private _bools;
-        private _ubos;
-        protected shader: string;
-        protected plugin: BABYLON.MaterialPluginBase;
-        constructor(name: string, scene: BABYLON.Scene);
-        /** Adds a custom attribute property */
-        addAttribute(attributeName: string): void;
-        /** Checks uniform values. Internal Use Only */
-        checkUniform(uniformName: string, type: string, value?: any): void;
-        /** Checks sampler values. Internal Use Only */
-        checkSampler(samplerName: string, texture?: any): void;
-        /** Adds a texture uniform property */
-        addTextureUniform(name: string, texture: BABYLON.Texture): TOOLKIT.CustomShaderMaterial;
-        /** Sets the texture uniform value */
-        setTextureValue(name: string, texture: BABYLON.Texture): TOOLKIT.CustomShaderMaterial;
-        /** Gets the texture uniform value */
-        getTextureValue(name: string): BABYLON.Texture;
-        /** Adds a vector4 uniform property */
-        addVector4Uniform(name: string, value: BABYLON.Vector4): TOOLKIT.CustomShaderMaterial;
-        /** Sets the vector4 uniform value */
-        setVector4Value(name: string, value: BABYLON.Vector4): TOOLKIT.CustomShaderMaterial;
-        /** Gets the vector4 uniform value */
-        getVector4Value(name: string): BABYLON.Vector4;
-        /** Adds a vector3 uniform property */
-        addVector3Uniform(name: string, value: BABYLON.Vector3): TOOLKIT.CustomShaderMaterial;
-        /** Sets the vector3 uniform value */
-        setVector3Value(name: string, value: BABYLON.Vector3): TOOLKIT.CustomShaderMaterial;
-        /** Gets the vector3 uniform value */
-        getVector3Value(name: string): BABYLON.Vector3;
-        /** Adds a vector2 uniform property */
-        addVector2Uniform(name: string, value: BABYLON.Vector2): TOOLKIT.CustomShaderMaterial;
-        /** Sets the vector2 uniform value */
-        setVector2Value(name: string, value: BABYLON.Vector2): TOOLKIT.CustomShaderMaterial;
-        /** Gets the vector2 uniform value */
-        getVector2Value(name: string): BABYLON.Vector2;
-        /** Adds a float uniform property */
-        addFloatUniform(name: string, value: number): TOOLKIT.CustomShaderMaterial;
-        /** Sets the float uniform value */
-        setFloatValue(name: string, value: number): TOOLKIT.CustomShaderMaterial;
-        /** Gets the float uniform value */
-        getFloatValue(name: string): number;
-        /** Adds a boolean uniform property */
-        addBoolUniform(name: string, value: boolean): TOOLKIT.CustomShaderMaterial;
-        /** Sets the boolean uniform value */
-        setBoolValue(name: string, value: boolean): TOOLKIT.CustomShaderMaterial;
-        /** Gets the boolean uniform value */
-        getBoolValue(name: string): boolean;
-        /** Gets the animatables */
-        getAnimatables(): BABYLON.IAnimatable[];
-        /** Gets the active textures */
-        getActiveTextures(): BABYLON.BaseTexture[];
-        /** Has the specified texture */
-        hasTexture(texture: BABYLON.BaseTexture): boolean;
-        /** Gets this custom material uniforms */
-        getCustomUniforms(wgsl: boolean): TOOLKIT.CustomUniformProperty[];
-        /** Gets this custom material uniforms */
-        getCustomSamplers(): string[];
-        /** Gets this custom material attributes */
-        getCustomAttributes(): string[];
-        /** Gets this custom material vertex source */
-        getCustomVertexCode(wgsl: boolean): string;
-        /** Gets this custom material fragment source */
-        getCustomFragmentCode(wgsl: boolean): string;
-        /** Prepares the custom material defines */
-        prepareCustomDefines(defines: BABYLON.MaterialDefines): void;
-        /** Update custom material bindings */
-        updateCustomBindings(effect: BABYLON.UniformBuffer): void;
-        /** Builds a custom uniform property */
-        protected buildUniformProperty(uniformName: string, uniformType: string, uniformValue: any): void;
-    }
-    /**
-      * GLTF Custom Shader Material Plugin (BABYLON.MaterialPluginBase)
-      * @class CustomShaderMaterialPlugin - All rights reserved (c) 2024 Mackey Kinard
-      */
-    class CustomShaderMaterialPlugin extends BABYLON.MaterialPluginBase {
-        private _isEnabled;
-        /**
-         * Creates a new material plugin
-         * @param material parent material of the plugin
-         * @param name name of the plugin
-         * @param priority priority of the plugin
-         * @param defines list of defines used by the plugin. The value of the property is the default value for this property
-         * @param addToPluginList true to add the plugin to the list of plugins managed by the material plugin manager of the material (default: true)
-         * @param enable true to enable the plugin (it is handy if the plugin does not handle properties to switch its current activation)
-         * @param resolveIncludes Indicates that any #include directive in the plugin code must be replaced by the corresponding code (default: false)
-         */
-        constructor(material: BABYLON.Material, name: string, priority: number, defines?: {}, addToPluginList?: boolean, enable?: boolean, resolveIncludes?: boolean);
-        get isEnabled(): boolean;
-        set isEnabled(enabled: boolean);
-        vertexDefinitions: string;
-        fragmentDefinitions: string;
-        /** Gets a reference to the custom shader material */
-        getCustomShaderMaterial(): TOOLKIT.CustomShaderMaterial;
-    }
-    /**
-     * Babylon custom uniform items (GLTF)
-     */
-    type CustomUniformProperty = {
-        name: string;
-        size: number;
-        type: string;
-        arraySize?: number;
-    };
-}
 declare namespace TOOLKIT.Simplex {
     /**
      * A random() function, must return a number in the interval [0,1), just like Math.random().
@@ -1244,653 +2074,6 @@ declare namespace TOOLKIT.Simplex {
 /** Babylon Toolkit Namespace */
 declare namespace TOOLKIT {
     /**
-     * Babylon toolkit system class
-     * @class System - All rights reserved (c) 2024 Mackey Kinard
-     */
-    enum System {
-        Deg2Rad,
-        Rad2Deg,
-        Epsilon = 0.000001,
-        SingleEpsilon = 1.401298e-45,
-        EpsilonNormalSqrt = 1e-15,
-        Kph2Mph = 0.621371,
-        Mph2Kph = 1.60934,
-        Mps2Kph = 3.6,
-        Mps2Mph = 2.23694,
-        Meter2Inch = 39.3701,
-        Inch2Meter = 0.0254,
-        Gravity = 9.81,
-        Gravity3G = 29.400000000000002,
-        SkidFactor = 0.25,
-        MaxInteger = 2147483647,
-        WalkingVelocity = 4.4,// 4 km/h -> 1.1 m/s
-        TerminalVelocity = 55,
-        SmoothDeltaFactor = 0.2,
-        ToLinearSpace = 2.2,
-        ToGammaSpace = 0.45454545454545453
-    }
-    enum Handedness {
-        Default = -1,
-        Right = 0,
-        Left = 1
-    }
-    enum SearchType {
-        ExactMatch = 0,
-        StartsWith = 1,
-        EndsWith = 2,
-        IndexOf = 3
-    }
-    enum PlayerNumber {
-        Auto = 0,
-        One = 1,
-        Two = 2,
-        Three = 3,
-        Four = 4
-    }
-    enum PlayerControl {
-        FirstPerson = 0,
-        ThirdPerson = 1
-    }
-    enum RenderQuality {
-        High = 0,
-        Medium = 1,
-        Low = 2
-    }
-    enum GamepadType {
-        None = -1,
-        Generic = 0,
-        Xbox360 = 1,
-        DualShock = 2,
-        PoseController = 3
-    }
-    enum Xbox360Trigger {
-        Left = 0,
-        Right = 1
-    }
-    enum MovementType {
-        DirectVelocity = 0,
-        AppliedForces = 1
-    }
-    enum CollisionContact {
-        Top = 0,
-        Left = 1,
-        Right = 2,
-        Bottom = 3
-    }
-    enum IntersectionPrecision {
-        AABB = 0,
-        OBB = 1
-    }
-    enum CollisionFilters {
-        DefaultFilter = 1,
-        StaticFilter = 2,
-        KinematicFilter = 4,
-        DebrisFilter = 8,
-        SensorTrigger = 16,
-        CharacterFilter = 32,
-        AllFilter = -1
-    }
-    enum CollisionState {
-        ACTIVE_TAG = 1,
-        ISLAND_SLEEPING = 2,
-        WANTS_DEACTIVATION = 3,
-        DISABLE_DEACTIVATION = 4,
-        DISABLE_SIMULATION = 5
-    }
-    enum CollisionFlags {
-        CF_STATIC_OBJECT = 1,
-        CF_KINEMATIC_OBJECT = 2,
-        CF_NO_CONTACT_RESPONSE = 4,
-        CF_CUSTOM_MATERIAL_CALLBACK = 8,
-        CF_CHARACTER_OBJECT = 16,
-        CF_DISABLE_VISUALIZE_OBJECT = 32,
-        CF_DISABLE_SPU_COLLISION_PROCESSING = 64,
-        CF_HAS_CONTACT_STIFFNESS_DAMPING = 128,
-        CF_HAS_CUSTOM_DEBUG_RENDERING_COLOR = 256,
-        CF_HAS_FRICTION_ANCHOR = 512,
-        CF_HAS_COLLISION_SOUND_TRIGGER = 1024
-    }
-    enum UserInputPointer {
-        Left = 0,
-        Middle = 1,
-        Right = 2
-    }
-    enum UserInputAxis {
-        Horizontal = 0,
-        Vertical = 1,
-        ClientX = 2,
-        ClientY = 3,
-        MouseX = 4,
-        MouseY = 5,
-        Wheel = 6
-    }
-    enum UserInputKey {
-        BackSpace = 8,
-        Tab = 9,
-        Enter = 13,
-        Shift = 16,
-        Ctrl = 17,
-        Alt = 18,
-        Pause = 19,
-        Break = 19,
-        CapsLock = 20,
-        Escape = 27,
-        SpaceBar = 32,
-        PageUp = 33,
-        PageDown = 34,
-        End = 35,
-        Home = 36,
-        LeftArrow = 37,
-        UpArrow = 38,
-        RightArrow = 39,
-        DownArrow = 40,
-        Insert = 45,
-        Delete = 46,
-        Num0 = 48,
-        Num1 = 49,
-        Num2 = 50,
-        Num3 = 51,
-        Num4 = 52,
-        Num5 = 53,
-        Num6 = 54,
-        Num7 = 55,
-        Num8 = 56,
-        Num9 = 57,
-        A = 65,
-        B = 66,
-        C = 67,
-        D = 68,
-        E = 69,
-        F = 70,
-        G = 71,
-        H = 72,
-        I = 73,
-        J = 74,
-        K = 75,
-        L = 76,
-        M = 77,
-        N = 78,
-        O = 79,
-        P = 80,
-        Q = 81,
-        R = 82,
-        S = 83,
-        T = 84,
-        U = 85,
-        V = 86,
-        W = 87,
-        X = 88,
-        Y = 89,
-        Z = 90,
-        LeftWindowKey = 91,
-        RightWindowKey = 92,
-        SelectKey = 93,
-        Numpad0 = 96,
-        Numpad1 = 97,
-        Numpad2 = 98,
-        Numpad3 = 99,
-        Numpad4 = 100,
-        Numpad5 = 101,
-        Numpad6 = 102,
-        Numpad7 = 103,
-        Numpad8 = 104,
-        Numpad9 = 105,
-        Multiply = 106,
-        Add = 107,
-        Subtract = 109,
-        DecimalPoint = 110,
-        Divide = 111,
-        F1 = 112,
-        F2 = 113,
-        F3 = 114,
-        F4 = 115,
-        F5 = 116,
-        F6 = 117,
-        F7 = 118,
-        F8 = 119,
-        F9 = 120,
-        F10 = 121,
-        F11 = 122,
-        F12 = 123,
-        NumLock = 144,
-        ScrollLock = 145,
-        SemiColon = 186,
-        EqualSign = 187,
-        Comma = 188,
-        Dash = 189,
-        Period = 190,
-        ForwardSlash = 191,
-        GraveAccent = 192,
-        OpenBracket = 219,
-        BackSlash = 220,
-        CloseBraket = 221,
-        SingleQuote = 222
-    }
-    interface UserInputPress {
-        index: number;
-        action: () => void;
-    }
-    type UserInputAction = (index: number) => void;
-    class UserInputOptions {
-        static KeyboardSmoothing: boolean;
-        static KeyboardMoveSensibility: number;
-        static KeyboardArrowSensibility: number;
-        static KeyboardMoveDeadZone: number;
-        static GamepadDeadStickValue: number;
-        static GamepadLStickXInverted: boolean;
-        static GamepadLStickYInverted: boolean;
-        static GamepadRStickXInverted: boolean;
-        static GamepadRStickYInverted: boolean;
-        static GamepadLStickSensibility: number;
-        static GamepadRStickSensibility: number;
-        static SupportedInputDevices: any[];
-        static BabylonAngularSensibility: number;
-        static DefaultAngularSensibility: number;
-        static PointerWheelDeadZone: number;
-        static PointerMouseDeadZone: number;
-        static PointerMouseInverted: boolean;
-        static UseCanvasElement: boolean;
-        static UseArrowKeyRotation: boolean;
-        static EnableBabylonRotation: boolean;
-    }
-    /**
-     * Babylon toolkit playground initialization options
-     * @param loadProjectScriptBundle load a project script bundle. Default true.
-     * @param projectScriptBundleUrl specified project script bundle. Default bundle.
-     * @param showDefaultLoadingScreen show the default loading screen. Default false.
-     * @param hideLoadingUIWithEngine hide the loading screen with engine.hideLoadingUI. When set to false, you must manually hide the loading screen using TOOLKIT.SceneManager.HideLoadingScreen when the scene is ready. Default true.
-     * @param defaultLoadingUIMarginTop The top margin of the loading text. Default 150px.
-     */
-    interface IPlaygroundOptions {
-        loadProjectScriptBundle?: boolean;
-        projectScriptBundleUrl?: string;
-        showDefaultLoadingScreen?: boolean;
-        hideLoadingUIWithEngine?: boolean;
-        defaultLoadingUIMarginTop?: string;
-    }
-    /**
-     * Asset Preloader Interface (https://doc.babylonjs.com/divingDeeper/importers/assetManager)
-     */
-    interface IAssetPreloader {
-        addPreloaderTasks(assetsManager: TOOLKIT.PreloadAssetsManager): void;
-    }
-    /**
-     * Window Message Interface
-     */
-    interface IWindowMessage {
-        source: string;
-        command: string;
-        [key: string]: any;
-    }
-    /**
-     * Unity Export Interfaces
-     */
-    interface IUnityTransform {
-        type: string;
-        id: string;
-        tag: string;
-        name: string;
-        layer: number;
-    }
-    interface IUnityCurve {
-        type: string;
-        length: number;
-        prewrapmode: string;
-        postwrapmode: string;
-        animation: any;
-    }
-    interface IUnityMaterial {
-        type: string;
-        id: string;
-        name: string;
-        shader: string;
-        gltf: number;
-    }
-    interface IUnityTexture {
-        type: string;
-        name: string;
-        width: number;
-        height: number;
-        filename: string;
-        wrapmode: string;
-        filtermode: string;
-        anisolevel: number;
-    }
-    interface IUnityCubemap {
-        type: string;
-        name: string;
-        info: any;
-        width: number;
-        height: number;
-        filename: string;
-        extension: string;
-        wrapmode: string;
-        filtermode: string;
-        anisolevel: number;
-        texelsizex: number;
-        texelsizey: number;
-        dimension: number;
-        format: number;
-        mipmapbias: number;
-        mipmapcount: number;
-    }
-    interface IUnityAudioClip {
-        type: string;
-        name: string;
-        filename: string;
-        length: number;
-        channels: number;
-        frequency: number;
-        samples: number;
-    }
-    interface IUnityVideoClip {
-        type: string;
-        name: string;
-        filename: string;
-        length: number;
-        width: number;
-        height: number;
-        framerate: number;
-        framecount: number;
-        audiotracks: number;
-    }
-    interface IUnityFontAsset {
-        type: string;
-        filename: string;
-        format: string;
-    }
-    interface IUnityTextAsset {
-        type: string;
-        filename: string;
-        base64: string;
-        json: boolean;
-    }
-    interface IUnityDefaultAsset {
-        type: string;
-        filename: string;
-        base64: string;
-        json: boolean;
-    }
-    interface IUnityVector2 {
-        x: number;
-        y: number;
-    }
-    interface IUnityVector3 {
-        x: number;
-        y: number;
-        z: number;
-    }
-    interface IUnityVector4 {
-        x: number;
-        y: number;
-        z: number;
-        w: number;
-    }
-    interface IUnityColor {
-        r: number;
-        g: number;
-        b: number;
-        a: number;
-    }
-    /**
-     * Http Request Header
-     * @class RequestHeader - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class RequestHeader {
-        name: string;
-        value: string;
-    }
-    /**
-     * Trigger Volume State
-     * @class TriggerVolume - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class TriggerVolume {
-        mesh: BABYLON.AbstractMesh;
-        state: number;
-    }
-    /**
-     * Room Error Message
-     * @class RoomErrorMessage - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class RoomErrorMessage {
-        code: number;
-        message: string;
-    }
-    /**
-     * Custom Loading Screen
-     * @class CustomLoadingScreen - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class CustomLoadingScreen implements BABYLON.ILoadingScreen {
-        loadingDivId: string;
-        loadingUIText: string;
-        hideLoadingUIWithEngine: boolean;
-        customInnerHtml: string;
-        customInnerCss: string;
-        loadingUIBackgroundColor: string;
-        constructor(loadingDivId: string, loadingUIText: string, hideLoadingUIWithEngine?: boolean, customInnerHtml?: string, customInnerCss?: string);
-        displayLoadingUI(): void;
-        hideLoadingUI(): void;
-        showLoadingDiv(show: boolean): void;
-        getLoadingDiv(): HTMLDivElement;
-        hasLoadingDiv(): boolean;
-    }
-    /**
-     * Local Message Bus (Safe Local Instance Communication)
-     * @class LocalMessageBus - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class LocalMessageBus {
-        /** Handle event bus message
-         * @param message The message to handle
-         * @param data The data to handle
-         * @returns void
-         */
-        OnMessage<T>(messageName: string, handler: (data: T) => void): void;
-        /** Post event bus message
-         * @param message The message to post
-         * @param data The data to post
-         * @returns void
-         */
-        PostMessage(messageName: string, data?: any): void;
-        /** Remove event bus message handler
-         * @param message The message to remove
-         * @param handler The handler to remove
-         * @returns void
-         */
-        RemoveHandler(messageName: string, handler: (data: any) => void): void;
-        /** Clear and reset all event bus message handlers
-         * @returns void
-         */
-        ResetHandlers(): void;
-        Dispose(): void;
-        private ListenerDictionary;
-    }
-    /**
-     * Global Message Bus (Safe Post Window Message Communication)
-     * @class GlobalMessageBus - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class GlobalMessageBus {
-        constructor();
-        /** Handle event bus message
-         * @param message The message to handle
-         * @param data The data to handle
-         * @returns void
-         */
-        OnMessage<T>(message: string, handler: (data: T) => void): void;
-        /** Post event bus message
-         * @param message The message to post
-         * @param data The data to post
-         * @param target The target to post
-         * @param transfer The transfer to post
-         * @returns void
-         */
-        PostMessage(message: string, data?: any, target?: string, transfer?: Transferable[] | undefined): void;
-        /** Remove event bus message handler
-         * @param message The message to remove
-         * @param handler The handler to remove
-         * @returns void
-         */
-        RemoveHandler(message: string, handler: (data: any) => void): void;
-        /** Clear and reset all event bus message handlers
-         * @returns void
-         */
-        ResetHandlers(): void;
-        /** Dispose the global message bus
-         * @returns void
-         */
-        Dispose(): void;
-        /** Handle window message event
-         * @param event The message event to handle
-         * @returns void
-         */
-        private HandleWindowMessage;
-        /** Dispatch internal event bus message
-         * @param message The message to dispatch
-         * @param data The data to dispatch
-         * @returns void
-         */
-        private OnDispatchMessage;
-        private ListenerDictionary;
-    }
-    /**
-     * Prefab Object Pool
-     * @class PrefabObjectPool - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class PrefabObjectPool {
-        private prefabName;
-        private allowGrowth;
-        private assetContainer;
-        private cloneAnimations;
-        private makeNewMaterials;
-        private availableInstances;
-        getAvailableCount(): number;
-        constructor(container: BABYLON.AssetContainer | BABYLON.Scene, prefabName: string, prefabCount?: number, allowGrowth?: boolean, makeNewMaterials?: boolean, cloneAnimations?: boolean);
-        /** Populate the prefab object pool by the specified count */
-        populatePool(count: number): void;
-        /** Get a prefab instance from the object pool or create a new one if none available */
-        getInstance(position?: BABYLON.Vector3, rotation?: BABYLON.Quaternion): BABYLON.TransformNode;
-        /** Free the prefab instance and reset the available object pool state */
-        freeInstance(instance: BABYLON.TransformNode): void;
-        private appendNewInstance;
-        private createNewInstance;
-    }
-    /**
-     * Physics Raycast Classes
-     * @class RaycastHitResult - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class RaycastHitResult {
-        private _hit;
-        private _dest;
-        private _origin;
-        private _hitPoint;
-        private _hitNormal;
-        private _hitDistance;
-        private _collisionObject;
-        get hasHit(): boolean;
-        get hitPoint(): BABYLON.Vector3;
-        get hitNormal(): BABYLON.Vector3;
-        get hitDistance(): number;
-        get collisionObject(): any;
-        get rayDestination(): BABYLON.Vector3;
-        get rayOrigin(): BABYLON.Vector3;
-        constructor();
-        reset(origin: BABYLON.Vector3, destination: BABYLON.Vector3): void;
-        update(hit: boolean, pointX: number, pointY: number, pointZ: number, normalX: number, normalY: number, normalZ: number, collisionObject?: any): void;
-    }
-    /**
-     * Lines Mesh Render Classes
-     * @class LinesMeshRenderer - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class LinesMeshRenderer {
-        private _numPoints;
-        private _pointMesh;
-        private _pointSize;
-        private _pointType;
-        private _linesName;
-        private _linesMesh;
-        private _babylonScene;
-        get pointMesh(): BABYLON.Mesh;
-        get linesMesh(): BABYLON.LinesMesh;
-        constructor(name: string, scene: BABYLON.Scene, pointType?: number, pointSize?: number);
-        dispose(doNotRecurse?: boolean): void;
-        hidePoint(hide?: boolean): void;
-        drawPoint(position: BABYLON.Vector3): void;
-        drawLine(points: BABYLON.Vector3[], color?: BABYLON.Color3): void;
-    }
-    /**
-     * Preload Assets Manager Classes (Note: No Progress Events For Textures)
-     * @class PreloadAssetsManager - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class PreloadAssetsManager extends BABYLON.AssetsManager {
-        /**
-         * Add a ContainerAssetTask to the list of active tasks
-         * Note: Progress Tracking Supported
-         * @param taskName defines the name of the new task
-         * @param meshesNames defines the name of meshes to load
-         * @param rootUrl defines the root url to use to locate files
-         * @param sceneFilename defines the filename of the scene file
-         * @returns a new ContainerAssetTask object
-         */
-        addContainerTask(taskName: string, meshesNames: any, rootUrl: string, sceneFilename: string): BABYLON.ContainerAssetTask;
-        /**
-         * Add a MeshAssetTask to the list of active tasks
-         * Note: Progress Tracking Supported
-         * @param taskName defines the name of the new task
-         * @param meshesNames defines the name of meshes to load
-         * @param rootUrl defines the root url to use to locate files
-         * @param sceneFilename defines the filename of the scene file
-         * @returns a new MeshAssetTask object
-         */
-        addMeshTask(taskName: string, meshesNames: any, rootUrl: string, sceneFilename: string): BABYLON.MeshAssetTask;
-        /**
-         * Add a TextFileAssetTask to the list of active tasks
-         * Note: Progress Tracking Supported
-         * @param taskName defines the name of the new task
-         * @param url defines the url of the file to load
-         * @returns a new TextFileAssetTask object
-         */
-        addTextFileTask(taskName: string, url: string): BABYLON.TextFileAssetTask;
-        /**
-         * Add a BinaryFileAssetTask to the list of active tasks
-         * Note: Progress Tracking Supported
-         * @param taskName defines the name of the new task
-         * @param url defines the url of the file to load
-         * @returns a new BinaryFileAssetTask object
-         */
-        addBinaryFileTask(taskName: string, url: string): BABYLON.BinaryFileAssetTask;
-        /**
-         * Add a ImageAssetTask to the list of active tasks
-         * Note: Progress Tracking Supported
-         * @param taskName defines the name of the new task
-         * @param url defines the url of the file to load
-         * @returns a new ImageAssetTask object
-         */
-        addImageTask(taskName: string, url: string): BABYLON.ImageAssetTask;
-        /**
-         * Handle Preloading Progress Events
-         */
-        private handlePreloadingProgress;
-    }
-    /**
-     * Babylon network entity controller (Colyseus Universal Game Room)
-     * @class EntityController - All rights reserved (c) 2024 Mackey Kinard
-     */
-    class EntityController {
-        /** Validates a network entity on the transform node. */
-        static HasNetworkEntity(transform: BABYLON.TransformNode): boolean;
-        /** Gets the network entity id on the transform node. */
-        static GetNetworkEntityId(transform: BABYLON.TransformNode): string;
-        /** Gets the network entity type on the transform node. */
-        static GetNetworkEntityType(transform: BABYLON.TransformNode): number;
-        /** Gets the network entity owner session id on the transform node. */
-        static GetNetworkEntitySessionId(transform: BABYLON.TransformNode): string;
-        /** Queries the syncronized network entity attribute on the transform node. */
-        static QueryNetworkAttribute(transform: BABYLON.TransformNode, key: string): string;
-        /** Queries the buffered network entity attribute on the transform node. */
-        static QueryBufferedAttribute(transform: BABYLON.TransformNode, index: number): number;
-        /** Post the buffered network entity attribute on the transform node update batch. (Local Entities Only) */
-        static PostBufferedAttribute(transform: BABYLON.TransformNode, index: number, value: number): void;
-    }
-    /**
      * Babylon Utility Classes
      * @class Utilities - All rights reserved (c) 2024 Mackey Kinard
      */
@@ -1915,6 +2098,8 @@ declare namespace TOOLKIT {
         static OnPreloaderComplete: (tasks: BABYLON.AbstractAssetTask[]) => void;
         static GetLayerMask(layer: number): number;
         static IsLayerMasked(mask: number, layer: number): boolean;
+        /** Get the current havok plugin from the global stack */
+        static GetHavokPlugin(): BABYLON.HavokPlugin;
         static GetLoadingState(): number;
         /** Get full floating point random number */
         static GetRandomRange(min: number, max: number, last?: BABYLON.Nullable<number>, retries?: BABYLON.Nullable<number>): number;
@@ -2112,6 +2297,8 @@ declare namespace TOOLKIT {
         /** TODO */
         static CalculatCatmullRomToRef(p0: BABYLON.Vector3, p1: BABYLON.Vector3, p2: BABYLON.Vector3, p3: BABYLON.Vector3, i: number, result: BABYLON.Vector3): void;
         /** TODO */
+        static MakeProper(name: string): string;
+        /** TODO */
         static StartsWith(source: string, word: string): boolean;
         /** TODO */
         static EndsWith(source: string, word: string): boolean;
@@ -2288,6 +2475,7 @@ declare namespace TOOLKIT {
         static ComputeBlendingSpeed(rate: number, duration: number, dampen?: boolean): number;
         static CalculateCameraDistance(farClipPlane: number, lodPercent: number, clipPlaneScale?: number): number;
         /** TODO */
+        /** TODO */
         static InstantiateClass(className: string): any;
         /** TODO */
         static GetSimpleClassName(obj: any): string;
@@ -2384,175 +2572,6 @@ declare namespace TOOLKIT {
         private GLSL_FormatTerrainVertexMainEnd;
         private GLSL_FormatTerrainFragmentDefintions;
         private GLSL_FormatTerrainFragmentUpdateColor;
-    }
-}
-declare namespace TOOLKIT {
-    /**
-     * Babylon Toolkit Unity Editor - Loader Class
-     * @class CVTOOLS_unity_metadata - All rights reserved (c) 2024 Mackey Kinard
-     * [Specification](https://github.com/MackeyK24/glTF/tree/master/extensions/2.0/Vendor/CVTOOLS_unity_metadata)
-     */
-    const enum MaterialAlphaMode {
-        /**
-         * The alpha value is ignored and the rendered output is fully opaque
-         */
-        OPAQUE = "OPAQUE",
-        /**
-         * The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value
-         */
-        MASK = "MASK",
-        /**
-         * The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator)
-         */
-        BLEND = "BLEND"
-    }
-    class CubeTextureLoader {
-        name: string;
-        mapkey: string;
-        material: BABYLON.Material;
-        extension: string;
-        prefiltered: boolean;
-        boundingBoxSize: BABYLON.Vector3;
-        boundingBoxPosition: BABYLON.Vector3;
-    }
-    class CVTOOLS_unity_metadata implements BABYLON.GLTF2.IGLTFLoaderExtension {
-        /** The name of this extension. */
-        readonly name: string;
-        /** Defines whether this extension is enabled. */
-        enabled: boolean;
-        private _webgpu;
-        private _loader;
-        private _babylonScene;
-        private _metadataParser;
-        private _loaderScene;
-        private _assetsManager;
-        private _parserList;
-        private _masterList;
-        private _detailList;
-        private _shaderList;
-        private _readyList;
-        private _preloadList;
-        private _animationGroups;
-        private _materialMap;
-        private _lightmapMap;
-        private _reflectionMap;
-        private _reflectionCache;
-        private _assetContainer;
-        private _activeMeshes;
-        private _parseScene;
-        private _leftHanded;
-        private _disposeRoot;
-        private _sceneParsed;
-        private _preWarmTime;
-        private _hideLoader;
-        private _rootUrl;
-        private _fileName;
-        private _licenseName;
-        private _licenseType;
-        private static ScriptBundleCache;
-        /** @hidden */
-        constructor(loader: BABYLON.GLTF2.GLTFLoader);
-        /** @hidden */
-        dispose(): void;
-        /** @hidden */
-        onLoading(): void;
-        /** @hidden */
-        onReady(): void;
-        /** @hidden */
-        onComplete(): void;
-        getScriptBundleTag(): string;
-        getScriptBundleUrl(): string;
-        finishComplete(): void;
-        /** @hidden */
-        onValidate(): void;
-        /** @hidden */
-        onCleanup(): void;
-        /** @hidden */
-        setupLoader(): void;
-        /** @hidden */
-        startParsing(): void;
-        /** @hidden */
-        loadSceneAsync(context: string, scene: BABYLON.GLTF2.Loader.IScene): BABYLON.Nullable<Promise<void>>;
-        private loadSceneExAsync;
-        private _processActiveMeshes;
-        private _processUnityMeshes;
-        private _processPreloadTimeout;
-        /** @hidden */
-        loadNodeAsync(context: string, node: BABYLON.GLTF2.Loader.INode, assign: (babylonMesh: BABYLON.TransformNode) => void): BABYLON.Nullable<Promise<BABYLON.TransformNode>>;
-        /** @hidden */
-        loadMaterialPropertiesAsync(context: string, material: BABYLON.GLTF2.IMaterial, babylonMaterial: BABYLON.Material): BABYLON.Nullable<Promise<void>>;
-        private _getCachedMaterialByIndex;
-        private _getCachedLightmapByIndex;
-        /** @hidden */
-        createMaterial(context: string, material: BABYLON.GLTF2.IMaterial, babylonDrawMode: number): BABYLON.Nullable<BABYLON.Material>;
-        /**
-         * Loads a glTF animation.
-         * @param context The context when loading the asset
-         * @param animation The glTF animation property
-         * @returns A promise that resolves with the loaded Babylon animation group when the load is complete
-         */
-        loadAnimationAsync(context: string, animation: BABYLON.GLTF2.Loader.IAnimation): Promise<BABYLON.AnimationGroup>;
-        /**
-         * Loads a glTF animation.
-         * @param context The context when loading the asset
-         * @param animation The glTF animation property
-         * @returns A promise that resolves with the loaded Babylon animation group when the load is complete
-         */
-        /**
-         * @hidden Define this method to modify the default behavior when loading data for mesh primitives.
-         * @param context The context when loading the asset
-         * @param name The mesh name when loading the asset
-         * @param node The glTF node when loading the asset
-         * @param mesh The glTF mesh when loading the asset
-         * @param primitive The glTF mesh primitive property
-         * @param assign A function called synchronously after parsing the glTF properties
-         * @returns A promise that resolves with the loaded mesh when the load is complete or null if not handled
-         */
-        _loadMeshPrimitiveAsync(context: string, name: string, node: BABYLON.GLTF2.INode, mesh: BABYLON.GLTF2.IMesh, primitive: any, assign: (babylonMesh: BABYLON.AbstractMesh) => void): Promise<BABYLON.AbstractMesh>;
-        private _setupBabylonMesh;
-        private _setupBabylonMaterials;
-        private _processLevelOfDetail;
-        private _processShaderMaterials;
-        private preProcessSceneProperties;
-        private postProcessSceneProperties;
-        private _preloadRawMaterialsAsync;
-        private _parseMultiMaterialAsync;
-        private _parseNodeMaterialPropertiesAsync;
-        private _parseShaderMaterialPropertiesAsync;
-        private _parseDiffuseMaterialPropertiesAsync;
-        private _parseCommonConstantProperties;
-    }
-    /**
-     * Babylon Toolkit Editor - Loader Class
-     * @class CVTOOLS_babylon_mesh - All rights reserved (c) 2024 Mackey Kinard
-     * [Specification](https://github.com/MackeyK24/glTF/tree/master/extensions/2.0/Vendor/CVTOOLS_unity_metadata)
-     */
-    class CVTOOLS_babylon_mesh implements BABYLON.GLTF2.IGLTFLoaderExtension {
-        /** The name of this extension. */
-        readonly name: string;
-        /** Defines whether this extension is enabled. */
-        enabled: boolean;
-        private _loader;
-        /** @hidden */
-        constructor(loader: BABYLON.GLTF2.GLTFLoader);
-        /** @hidden */
-        dispose(): void;
-    }
-    /**
-     * Babylon Toolkit Editor - Loader Class
-     * @class CVTOOLS_left_handed - All rights reserved (c) 2024 Mackey Kinard
-     * [Specification](https://github.com/MackeyK24/glTF/tree/master/extensions/2.0/Vendor/CVTOOLS_unity_metadata)
-     */
-    class CVTOOLS_left_handed implements BABYLON.GLTF2.IGLTFLoaderExtension {
-        /** The name of this extension. */
-        readonly name: string;
-        /** Defines whether this extension is enabled. */
-        enabled: boolean;
-        private _loader;
-        /** @hidden */
-        constructor(loader: BABYLON.GLTF2.GLTFLoader);
-        /** @hidden */
-        dispose(): void;
     }
 }
 /** Babylon Toolkit Namespace */
@@ -3878,7 +3897,7 @@ declare namespace TOOLKIT {
         chassisBody: BABYLON.PhysicsBody;
         wheelInfos: TOOLKIT.HavokWheelInfo[];
         sliding: boolean;
-        world: BABYLON.PhysicsEngine;
+        world: any;
         indexRightAxis: number;
         indexForwardAxis: number;
         indexUpAxis: number;
@@ -3895,7 +3914,7 @@ declare namespace TOOLKIT {
         setSteeringValue(value: number, wheelIndex: number): void;
         applyEngineForce(value: number, wheelIndex: number): void;
         setBrake(brake: number, wheelIndex: number): void;
-        addToWorld(world: BABYLON.PhysicsEngine): void;
+        addToWorld(world: any): void;
         getVehicleAxisWorld(axisIndex: number, result: BABYLON.Vector3): BABYLON.Vector3;
         getCurrentSpeedKmHour(): number;
         updateVehicle(timeStep: number): void;
@@ -4216,8 +4235,6 @@ declare namespace TOOLKIT {
         getRaycastVehicle(): any;
         /** Get the current havok instance from the global stack */
         static GetHavokInstance(): any;
-        /** Get the current havok plugin from the global stack */
-        static GetHavokPlugin(): BABYLON.HavokPlugin;
         /**
          * Performs a raycast from a given start point in the given direction and length and stores the result in a reusable PhysicsRaycastResult object.
          * @param origin - The start point of the raycast.
@@ -4287,6 +4304,62 @@ declare namespace TOOLKIT {
          * @param childTransform The transform node associated with the child shape
          */
         protected static AddChildShapeFromParent(containerShape: BABYLON.PhysicsShape, parentTransform: BABYLON.TransformNode, newChild: BABYLON.PhysicsShape, childTransform: BABYLON.TransformNode): void;
+        /**
+         * No-Imposter type
+         */
+        static NoImpostor: number;
+        /**
+         * Sphere-Imposter type
+         */
+        static SphereImpostor: number;
+        /**
+         * Box-Imposter type
+         */
+        static BoxImpostor: number;
+        /**
+         * Plane-Imposter type
+         */
+        static PlaneImpostor: number;
+        /**
+         * Mesh-imposter type (Only available to objects with vertices data)
+         */
+        static MeshImpostor: number;
+        /**
+         * Capsule-Impostor type (Ammo.js plugin only)
+         */
+        static CapsuleImpostor: number;
+        /**
+         * Cylinder-Imposter type
+         */
+        static CylinderImpostor: number;
+        /**
+         * Particle-Imposter type
+         */
+        static ParticleImpostor: number;
+        /**
+         * Heightmap-Imposter type
+         */
+        static HeightmapImpostor: number;
+        /**
+         * ConvexHull-Impostor type (Ammo.js plugin only)
+         */
+        static ConvexHullImpostor: number;
+        /**
+         * Custom-Imposter type (Ammo.js plugin only)
+         */
+        static CustomImpostor: number;
+        /**
+         * Rope-Imposter type
+         */
+        static RopeImpostor: number;
+        /**
+         * Cloth-Imposter type
+         */
+        static ClothImpostor: number;
+        /**
+         * Softbody-Imposter type
+         */
+        static SoftbodyImpostor: number;
     }
     class PhyscisContainerData {
         shape: BABYLON.PhysicsShape;
@@ -4447,7 +4520,7 @@ declare namespace TOOLKIT {
     }
 }
 
-declare var SM: typeof TOOLKIT.SceneManager;
-declare var WM: typeof TOOLKIT.WindowManager;
-declare var IC: typeof TOOLKIT.InputController;
+//declare var SM: typeof TOOLKIT.SceneManager;
+//declare var WM: typeof TOOLKIT.WindowManager;
+//declare var IC: typeof TOOLKIT.InputController;
 

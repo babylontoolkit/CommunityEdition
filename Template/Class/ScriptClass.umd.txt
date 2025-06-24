@@ -48,4 +48,6 @@ namespace #ROOTNAMESPACE# {
             /* Destroy component function */
         }
     }
+
+    TOOLKIT.SceneManager.RegisterClass("#ROOTNAMESPACE#.#BACKINGCLASS#", #BACKINGCLASS#);
 }

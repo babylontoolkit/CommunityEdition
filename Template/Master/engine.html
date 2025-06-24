@@ -584,11 +584,6 @@
     // ************************************************************************ //
     window.executeSceneLoader = (root, name) => {
         window.updateStatus("PLEASE WAIT", "LOADING", 0);
-        var qlevel = TOOLKIT.SceneManager.GetRenderQuality();
-        var qlabel = "High";
-        if (qlevel === 1) qlabel = "Medium";
-        else if (qlevel == 2) qlabel = "Low";
-        BABYLON.Tools.Log("Graphics render quality: " + qlabel);
         BABYLON.SceneLoader.Load(root, name, engine, (newscene) => {
             window.scene = newscene;
             //window.scene.blockMaterialDirtyMechanism = true;
@@ -741,7 +736,6 @@
                 if (navigator.gpu) {
                     engine = new BABYLON.WebGPUEngine(divcvs, { audioEngine: legacyAudio, antialias: antialias, powerPreference: gpuPerformanceProfile, enableAllFeatures:true, setMaximumLimits: true, doNotHandleContextLost: true });
                     engine.initAsync({ jsPath: "###SCRIPT###/glslang.js", wasmPath: "###SCRIPT###/glslang.wasm" }, { jsPath: "###SCRIPT###/twgsl.js", wasmPath: "###SCRIPT###/twgsl.wasm" }).catch((ex) => { showErrorMessage(ex.message || "Unknown WebGPU Exception"); }).then(() => {
-                        BABYLON.Tools.Log("WebGPU rendering engine enabled");
                         window.prepareBabylonEngineProperties();
                         if (snapshot === 1) {
                             engine.snapshotRenderingMode = BABYLON.Constants.SNAPSHOTRENDERING_STANDARD;
@@ -750,7 +744,7 @@
                         }
                     });
                 } else {
-                    BABYLON.Tools.Warn("WebGPU is not supported on platform. Falling back to WebGL");
+                    // BABYLON.Tools.Warn("WebGPU is not supported on platform. Falling back to WebGL");
                     engine = new BABYLON.Engine(divcvs, antialias, { audioEngine: legacyAudio, powerPreference: cpuPerformanceProfile, preserveDrawingBuffer: preserveDrawBuffer, stencil: useStencilBuffer, premultipliedAlpha: false, doNotHandleContextLost: true }, false);
                     window.prepareBabylonEngineProperties();
                 }
@@ -762,7 +756,7 @@
             window.showErrorMessage(ex3.message || "Unknown Engine Exception");
         }
     };
-    window.prepareBabylonEngineProperties = () => {
+    window.prepareBabylonEngineProperties = async () => {
         // ************************************************************************ //
         window.audioEngineClicked = false;    
         window.doAudioEngineClick = async () => {
@@ -772,12 +766,12 @@
                 if (legacyAudio === true) {
                     if (TOOLKIT.AudioSource.UnlockLegacyAudio) {
                         TOOLKIT.AudioSource.UnlockLegacyAudio();
-                        BABYLON.Tools.Warn("Unlocked legacy audio engine");
+                        // BABYLON.Tools.Warn("Unlocked legacy audio engine");
                     }
                 } else {
                     if (TOOLKIT.AudioSource.UnlockAudioEngine) {
                         await TOOLKIT.AudioSource.UnlockAudioEngine();
-                        BABYLON.Tools.Warn("Unlocked audio engine context");
+                        // BABYLON.Tools.Warn("Unlocked audio engine context");
                     }
                 }   
             }
@@ -789,6 +783,7 @@
         // DEPRECIATED: engine.renderEvenInBackground = renderinbackground;
         // DEPRECIATED: engine.clear(new BABYLON.Color3(0, 0, 0), true, true, true);
         engine.displayLoadingUI();
+        await TOOLKIT.SceneManager.InitializeRuntime(engine);
         // ************************************************************************ //
         // if (handlecontext === true) {
         //     engine.onContextLostObservable.add(()=>{
