@@ -3804,6 +3804,7 @@ declare module BABYLON.GLTF2.Loader.Extensions {
        - Is Not a Number (`math/isnan`) FlowGraphBlockNames.IsNaN
        - Is Infinity (`math/isinf`) FlowGraphBlockNames.IsInfinity
        - Select (`math/select`) FlowGraphBlockNames.Conditional
+       - Switch (`math/switch`) FlowGraphBlockNames.DataSwitch
        - Random (`math/random`) FlowGraphBlockNames.Random
     5. **Angle and Trigonometry Nodes**
        - Degrees-To-Radians (`math/rad`) FlowGraphBlockNames.DegToRad
@@ -3843,14 +3844,23 @@ declare module BABYLON.GLTF2.Loader.Extensions {
        - Determinant (`math/determinant`) FlowGraphBlockNames.Determinant
        - Inverse (`math/inverse`) FlowGraphBlockNames.InvertMatrix
        - Multiplication (`math/matmul`) FlowGraphBlockNames.MatrixMultiplication
-    10. **Swizzle Nodes**
+       - Compose (`math/matCompose`) FlowGraphBlockNames.MatrixCompose
+       - Decompose (`math/matDecompose`) FlowGraphBlockNames.MatrixDecompose
+    10. **Quaternion Nodes**
+        - Conjugate (`math/quatConjugate`) FlowGraphBlockNames.Conjugate
+        - Multiplication (`math/quatMul`) FlowGraphBlockNames.Multiply
+        - Angle Between Quaternions (`math/quatAngleBetween`) FlowGraphBlockNames.AngleBetween
+        - Quaternion From Axis Angle (`math/quatFromAxisAngle`) FlowGraphBlockNames.QuaternionFromAxisAngle
+        - Quaternion To Axis Angle (`math/quatToAxisAngle`) FlowGraphBlockNames.QuaternionToAxisAngle
+        - Quaternion From Two Directional Vectors (`math/quatFromDirections`) FlowGraphBlockNames.QuaternionFromDirections
+    11. **Swizzle Nodes**
         - Combine (`math/combine2`, `math/combine3`, `math/combine4`, `math/combine2x2`, `math/combine3x3`, `math/combine4x4`)
             FlowGraphBlockNames.CombineVector2, FlowGraphBlockNames.CombineVector3, FlowGraphBlockNames.CombineVector4
             FlowGraphBlockNames.CombineMatrix2D, FlowGraphBlockNames.CombineMatrix3D, FlowGraphBlockNames.CombineMatrix
         - Extract (`math/extract2`, `math/extract3`, `math/extract4`, `math/extract2x2`, `math/extract3x3`, `math/extract4x4`)
             FlowGraphBlockNames.ExtractVector2, FlowGraphBlockNames.ExtractVector3, FlowGraphBlockNames.ExtractVector4
             FlowGraphBlockNames.ExtractMatrix2D, FlowGraphBlockNames.ExtractMatrix3D, FlowGraphBlockNames.ExtractMatrix
-    11. **Integer Arithmetic Nodes**
+    12. **Integer Arithmetic Nodes**
         - Absolute Value (`math/abs`) FlowGraphBlockNames.Abs
         - Sign (`math/sign`) FlowGraphBlockNames.Sign
         - Negation (`math/neg`) FlowGraphBlockNames.Negation
@@ -3862,13 +3872,13 @@ declare module BABYLON.GLTF2.Loader.Extensions {
         - Minimum (`math/min`) FlowGraphBlockNames.Min
         - Maximum (`math/max`) FlowGraphBlockNames.Max
         - Clamp (`math/clamp`) FlowGraphBlockNames.Clamp
-    12. **Integer Comparison Nodes**
+    13. **Integer Comparison Nodes**
         - Equality (`math/eq`) FlowGraphBlockNames.Equality
         - Less Than (`math/lt`) FlowGraphBlockNames.LessThan
         - Less Than Or Equal To (`math/le`) FlowGraphBlockNames.LessThanOrEqual
         - Greater Than (`math/gt`) FlowGraphBlockNames.GreaterThan
         - Greater Than Or Equal To (`math/ge`) FlowGraphBlockNames.GreaterThanOrEqual
-    13. **Integer Bitwise Nodes**
+    14. **Integer Bitwise Nodes**
         - Bitwise NOT (`math/not`) FlowGraphBlockNames.BitwiseNot
         - Bitwise AND (`math/and`) FlowGraphBlockNames.BitwiseAnd
         - Bitwise OR (`math/or`) FlowGraphBlockNames.BitwiseOr
@@ -3878,7 +3888,7 @@ declare module BABYLON.GLTF2.Loader.Extensions {
         - Count Leading Zeros (`math/clz`) FlowGraphBlockNames.LeadingZeros
         - Count Trailing Zeros (`math/ctz`) FlowGraphBlockNames.TrailingZeros
         - Count One Bits (`math/popcnt`) FlowGraphBlockNames.OneBitsCounter
-    14. **Boolean Arithmetic Nodes**
+    15. **Boolean Arithmetic Nodes**
         - Equality (`math/eq`) FlowGraphBlockNames.Equality
         - Boolean NOT (`math/not`) FlowGraphBlockNames.BitwiseNot
         - Boolean AND (`math/and`) FlowGraphBlockNames.BitwiseAnd
