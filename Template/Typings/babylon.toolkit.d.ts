@@ -6,7 +6,7 @@ declare namespace TOOLKIT {
     * @class SceneManager - All rights reserved (c) 2024 Mackey Kinard
     */
     class SceneManager {
-        /** Gets the toolkit framework version number (8.14.10 - R1) */
+        /** Gets the toolkit framework version number (8.14.64 - R1) */
         static get Version(): string;
         /** Gets the toolkit framework copyright notice */
         static get Copyright(): string;
@@ -114,19 +114,23 @@ declare namespace TOOLKIT {
          */
         static get PlaygroundRepo(): string;
         /**
-         * Initialize the babylon toolkit playground environment (GLTF)
+         * @deprecated Use InitializeRuntime instead.
          * @param engine The engine instance.
          * @param options The playground options.
          * @returns a waitable promise.
          */
-        static InitializePlayground(engine: BABYLON.Engine | BABYLON.WebGPUEngine | BABYLON.AbstractEngine, options?: TOOLKIT.IPlaygroundOptions): Promise<void>;
+        static InitializePlayground(engine: BABYLON.Engine | BABYLON.WebGPUEngine | BABYLON.AbstractEngine, options?: TOOLKIT.IRuntimeOptions): Promise<void>;
         /**
-         * Initialize the babylon toolkit runtime environment (GLTF)
+         * Initialize the babylon toolkit runtime environment
          * @param engine The engine instance.
          * @param options The playground options.
          * @returns a waitable promise.
          */
-        static InitializeRuntime(engine: BABYLON.Engine | BABYLON.WebGPUEngine | BABYLON.AbstractEngine, options?: TOOLKIT.IPlaygroundOptions): Promise<void>;
+        static InitializeRuntime(engine: BABYLON.Engine | BABYLON.WebGPUEngine | BABYLON.AbstractEngine, options?: TOOLKIT.IRuntimeOptions): Promise<void>;
+        /**
+         * Initialize the scene loader plugin
+         */
+        static InitializeSceneLoaderPlugin(): void;
         /**
          * Sets the on scene ready handler then starts the assets manager loadAsync function
          * @param assetsManager The list of required scene filenames to check ready state.
@@ -875,16 +879,20 @@ declare namespace TOOLKIT {
         static EnableBabylonRotation: boolean;
     }
     /**
-     * Babylon toolkit playground initialization options
-     * @param initSceneFileLoaders initialize scne file loaders. Default true.
+     * Babylon toolkit runtime initialization options
+     * @param hardwareScalingLevel set hardware scaling level. Set to 0 to skip. Default (1 / window.devicePixelRatio).
+     * @param initSceneFileLoaders initialize scene file loaders. Default true.
+     * @param loadAsyncRuntimeLibs load async runtime libraries. Default true.
      * @param loadProjectScriptBundle load a project script bundle. Default false.
-     * @param projectScriptBundleUrl specified project script bundle. Default bundle.
+     * @param projectScriptBundleUrl specified project script bundle. Default (default.playground.js).
      * @param showDefaultLoadingScreen show the default loading screen. Default false.
      * @param hideLoadingUIWithEngine hide the loading screen with engine.hideLoadingUI. When set to false, you must manually hide the loading screen using TOOLKIT.SceneManager.HideLoadingScreen when the scene is ready. Default true.
      * @param defaultLoadingUIMarginTop The top margin of the loading text. Default 150px.
      */
-    interface IPlaygroundOptions {
+    interface IRuntimeOptions {
+        hardwareScalingLevel?: number;
         initSceneFileLoaders?: boolean;
+        loadAsyncRuntimeLibs?: boolean;
         loadProjectScriptBundle?: boolean;
         projectScriptBundleUrl?: string;
         showDefaultLoadingScreen?: boolean;
@@ -3072,6 +3080,8 @@ declare namespace TOOLKIT {
         static SetVirtualRealityEnabled(enabled: boolean): void;
         /** Set the Windows Runtime preferred launch windowing mode. (Example: Windows.UI.ViewManagement.ApplicationViewWindowingMode.fullScreen = 1) */
         static SetWindowsLaunchMode(mode?: number): void;
+        /** Gets the default window hardware scaling level (1 / window.devicePixelRatio) */
+        static GetHardwareScalingLevel(): number;
         /** Quit the Windows Runtime host application. */
         static QuitWindowsApplication(): void;
         static PrintToScreen(text: string, color?: string): void;
